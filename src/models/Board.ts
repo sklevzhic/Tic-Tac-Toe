@@ -3,13 +3,14 @@ import Cell from "./Cell"
 class Board {
   size: number
   cells: Array<Array<Cell>> = []
-
-  constructor(size: number) {
+  winSeries: number
+  constructor(size: number, winSeries: number) {
     this.size = size
+    this.winSeries = winSeries
   }
 
   initial() {
-    this.cells = initialBord(5)
+    this.cells = initialBord(this.size)
   }
 
 }
