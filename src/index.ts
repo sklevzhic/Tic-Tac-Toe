@@ -4,10 +4,44 @@ import Cell from "./models/Cell";
 import {Operators, Values} from "./types/values";
 
 let step = 0
+let sizeDesk = 10
+let winSeries1 = 3
 
 let wrapperBoard = document.querySelector(".wrapper") as HTMLDivElement
+let size = document.querySelector("#size") as HTMLInputElement
+let winseries = document.querySelector("#winseries") as HTMLInputElement
+let figureCurrent = document.querySelector("#figureCurrent") as HTMLSpanElement
+let stepHTMl = document.querySelector("#step") as HTMLSpanElement
+let winZnak = document.querySelector("#winZnak") as HTMLSpanElement
+let modal = document.querySelector("#modalWin") as HTMLDivElement
+let startBtn = document.querySelector("#start") as HTMLButtonElement
 
-let board = new Board(100,5)
+size.value = String(sizeDesk)
+winseries.value = String(winSeries1)
+
+size.addEventListener("change", handleSizeDesk)
+winseries.addEventListener("change", handleWinSeries)
+startBtn.addEventListener("click", rerenderDesk)
+
+function handleSizeDesk(e: any) {
+  sizeDesk = e.target.value
+}
+
+function handleWinSeries(e: any) {
+  winSeries1 = e.target.value
+}
+
+function rerenderDesk() {
+  console.log(sizeDesk)
+  console.log(winSeries1)
+
+  let board = new Board(sizeDesk,winSeries1)
+  board.initial()
+  wrapperBoard.innerHTML = ""
+  renderBoard(board.cells)
+}
+
+let board = new Board(sizeDesk,winSeries1)
 board.initial()
 
 renderBoard(board.cells)
@@ -35,12 +69,13 @@ function renderBoard(array: Array<Array<Cell>>) {
 
       let boardCell = document.createElement('div');
       boardCell.classList.add("border")
-      boardCell.classList.add("w-14")
-      boardCell.classList.add("h-14")
-      boardCell.classList.add("text-3xl")
+      boardCell.classList.add("w-8")
+      boardCell.classList.add("h-8")
+      boardCell.classList.add("text-xl")
+      boardCell.classList.add("shrink-0")
       boardCell.classList.add("text-center")
       boardCell.classList.add("cursor-default")
-      boardCell.classList.add("pt-1.5")
+      boardCell.classList.add("pt-0.5")
       if (cell.value === Values.VALUE_X) {
         boardCell.classList.add("text-blue-700")
         boardCell.innerText = cell.value
@@ -52,7 +87,7 @@ function renderBoard(array: Array<Array<Cell>>) {
         boardCell.classList.add("cursor-default")
       }
       if (!cell.value) {
-        boardCell.onclick = (e: any ) => handlerStep(e, cell, currentValue)
+        boardCell.onclick = (e: any ) => handlerStep(e, cell)
 
         boardCell.classList.add("text-gray-700")
         boardCell.classList.add("cursor-pointer")
@@ -66,9 +101,11 @@ function renderBoard(array: Array<Array<Cell>>) {
     wrapperBoard.appendChild(boardRow)
   })
 }
-function handlerStep(e: any , cell: Cell, currentValue: Values) {
-  console.log(step)
-  console.log(currentValue)
+function handlerStep(e: any , cell: Cell) {
+  let currentValue = getCurrentValue(step)
+  stepHTMl.innerText = String(step + 1)
+  figureCurrent.innerText = getCurrentValue(step + 1)
+
   board.cells[cell.x][cell.y].value = currentValue
   e.target.innerText = currentValue
 
@@ -123,10 +160,9 @@ function checkDiagonal(cell: Cell, currentValue: Values) {
     let res22 = checkCell(x, Operators.INC, y, Operators.DEC, i, currentValue)
     res1.push(res11)
     res2.push(res22)
-    countValues(res1, board.winSeries, currentValue)
-    countValues(res2, board.winSeries, currentValue)
-
   }
+  countValues(res1, board.winSeries, currentValue)
+  countValues(res2, board.winSeries, currentValue)
 
 }
 
@@ -139,19 +175,22 @@ function checkWin(cell: Cell, currentValue: Values) {
 
 
 function countValues(array: (Values | null)[], winSeries: number, value: Values) {
-
+  console.log(winSeries)
   let count = 0
-  array.forEach(el => {
-
-    if (el === value) {
+  for (let i = 0; i <= array.length - 1; i++ ) {
+    if (array[i] === value) {
       count++
     } else {
       count = 0
     }
     if (count === winSeries) {
-      alert("win")
+      console.log("win")
+      winZnak.innerText = value
+      modal.classList.remove("hidden")
+
     }
-  })
+  }
+
 }
 function checkCell(x:number, xOperator: string,  y:number,yOperator: string, i: number, currentValue: Values):Values | null {
   let x1 = xOperator === Operators.DEC ? x-i : x+i
