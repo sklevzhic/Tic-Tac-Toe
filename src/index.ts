@@ -94,6 +94,7 @@ function handlerStep(e: any , cell: Cell) {
 
   board.step++
   // После каждого хода проверка на победу
+
   checkWin(cell, currentValue)
 }
 
@@ -125,6 +126,7 @@ export function checkHorizontal(cell: Cell, currentValue: Values) {
   for (let i=start; i <end; i++) {
     res.push(board.cells[cell.x][i].value)
   }
+
   return countValues(res, board.winSeries, currentValue) ? showModal(currentValue) : ""
 }
 function checkDiagonal(cell: Cell, currentValue: Values) {
@@ -166,10 +168,11 @@ function showModal(value: string) {
 }
 
 function rerenderDesk() {
-  let board = new Board(+size.value, +winseries.value)
+  board = new Board(+size.value, +winseries.value)
   board.initial()
   wrapperBoard.innerHTML = ""
   stepHTMl.innerText = "0"
+  modal.classList.add("hidden")
   figureCurrent.innerText = "X"
   renderBoard(board.cells)
 }
