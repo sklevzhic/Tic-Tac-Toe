@@ -12,7 +12,8 @@ class Board {
   }
 
   initial() {
-    this.cells = initialBord(this.size)
+    let cells = initialBord(this.size)
+    this.cells = cells
   }
 
 }
