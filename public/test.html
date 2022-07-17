@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+
+<script>
+
+  let arr = [
+    [ { "x": 0, "y": 0, "value": null, "id": 158 },
+      { "x": 0, "y": 1, "value": null, "id": 228 },
+      { "x": 0, "y": 2, "value": null, "id": 158 },
+      { "x": 0, "y": 3, "value": null, "id": 226 },
+      { "x": 0, "y": 4, "value": null, "id": 235 },
+    ],
+    [ { "x": 1, "y": 0, "value": null, "id": 1158 },
+      { "x": 1, "y": 1, "value": null, "id": 1228 },
+      { "x": 1, "y": 2, "value": null, "id": 1158 },
+      { "x": 1, "y": 3, "value": "X", "id": 1226 },
+      { "x": 1, "y": 4, "value": null, "id": 1235 },
+    ],
+    [ { "x": 2, "y": 0, "value": null, "id": 2158 },
+      { "x": 2, "y": 1, "value": null, "id": 2228 },
+      { "x": 2, "y": 2, "value": "X", "id": 2158 },
+      { "x": 2, "y": 3, "value": null, "id": 2226 },
+      { "x": 2, "y": 4, "value": null, "id": 2235 },
+    ],
+    [ { "x": 3, "y": 0, "value": "X", "id": 3158 },
+      { "x": 3, "y": 1, "value": null, "id": 3228 },
+      { "x": 3, "y": 2, "value": "X", "id": 3158 },
+      { "x": 3, "y": 3, "value": null, "id": 3226 },
+      { "x": 3, "y": 4, "value": null, "id": 3235 },
+    ],
+    [ { "x": 4, "y": 0, "value": "X", "id": 4158 },
+      { "x": 4, "y": 1, "value": "0", "id": 4228 },
+      { "x": 4, "y": 2, "value": "X", "id": 4158 },
+      { "x": 4, "y": 3, "value": null, "id": 4226 },
+      { "x": 4, "y": 4, "value": null, "id": 4235 },
+    ]
+  ]
+
+  function getValueInCell(array,x, xOperator,  y,yOperator, i, currentValue) {
+    let x1 = xOperator === "-" ? x-i : x+i
+    let y1 = yOperator === "-" ? y-i : y+i
+
+    let a = x1 >= 0
+    let b = y1 >= 0
+    let c = x1 < array.length
+    let d = y1 < array.length
+    let condition = (a && b && c && d) ? array[x1][y1].value === currentValue : false
+
+    return condition ? array[x1][y1].value : null
+  }
+
+  console.log(getValueInCell(arr,4,"+",1, "-",0, "0"))
+
+
+</script>
+
+</body>
+</html>

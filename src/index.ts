@@ -1,11 +1,9 @@
-import "./style.css"
 import Board from "./models/Board";
 import Cell from "./models/Cell";
 import {Operators, Values} from "./types/values";
-
-let step = 0
-let sizeDesk = 10
-let winSeries1 = 3
+import { countValues } from "./utils/countValues";
+import { getCurrentValue } from "./utils/getCurrentValue";
+import { getValueInCell } from "./utils/getValueInCell";
 
 let wrapperBoard = document.querySelector(".wrapper") as HTMLDivElement
 let size = document.querySelector("#size") as HTMLInputElement
@@ -16,51 +14,21 @@ let winZnak = document.querySelector("#winZnak") as HTMLSpanElement
 let modal = document.querySelector("#modalWin") as HTMLDivElement
 let startBtn = document.querySelector("#start") as HTMLButtonElement
 
-size.value = String(sizeDesk)
-winseries.value = String(winSeries1)
-
-size.addEventListener("change", handleSizeDesk)
-winseries.addEventListener("change", handleWinSeries)
-startBtn.addEventListener("click", rerenderDesk)
-
-function handleSizeDesk(e: any) {
-  sizeDesk = e.target.value
-}
-
-function handleWinSeries(e: any) {
-  winSeries1 = e.target.value
-}
-
-function rerenderDesk() {
-  console.log(sizeDesk)
-  console.log(winSeries1)
-
-  let board = new Board(sizeDesk,winSeries1)
-  board.initial()
-  wrapperBoard.innerHTML = ""
-  renderBoard(board.cells)
-}
-
-let board = new Board(sizeDesk,winSeries1)
+// Инициализация доски по умолчанию
+let board = new Board(10,3)
 board.initial()
 
+// Значение по умолчанию закидываем на страницу
+size.value = String(board.size)
+winseries.value = String(board.winSeries)
+
+//Отрисовка при первом запуске
 renderBoard(board.cells)
 
 
 
 
-
-
-
-
-
-
-
-
-
 function renderBoard(array: Array<Array<Cell>>) {
-  let currentValue = getCurrentValue(step)
-
   array.forEach((rowCells: Cell[]) => {
     let boardRow = document.createElement('div');
     boardRow.classList.add("flex")
@@ -101,12 +69,19 @@ function renderBoard(array: Array<Array<Cell>>) {
     wrapperBoard.appendChild(boardRow)
   })
 }
-function handlerStep(e: any , cell: Cell) {
-  let currentValue = getCurrentValue(step)
-  stepHTMl.innerText = String(step + 1)
-  figureCurrent.innerText = getCurrentValue(step + 1)
 
+
+function handlerStep(e: any , cell: Cell) {
+  //Получаем текущий знак (X или 0)
+  let currentValue = getCurrentValue(board.step)
+  //Выводим на экран следующий ход и текущий ход
+  stepHTMl.innerText = String(board.step + 1)
+  figureCurrent.innerText = getCurrentValue(board.step + 1)
+
+
+  //В массиве ячеек меняем значение
   board.cells[cell.x][cell.y].value = currentValue
+  //Для оптимизации в ячейку ставиться текущий знак (X или 0), не перерисовывая всю доску
   e.target.innerText = currentValue
 
   if (currentValue === Values.VALUE_X) {
@@ -115,57 +90,12 @@ function handlerStep(e: any , cell: Cell) {
   if (currentValue === Values.VALUE_0) {
     e.target.classList.add("text-red-700")
   }
+  e.target.classList.add("pointer-events-none")
 
-  step++
-  // wrapperBoard.innerHTML = ""
-
-
+  board.step++
+  // После каждого хода проверка на победу
   checkWin(cell, currentValue)
-  // renderBoard(board.cells)
 }
-function getCurrentValue(step: number) {
-  return step % 2 ? Values.VALUE_0 : Values.VALUE_X
-}
-
-function checkVertical(cell: Cell, currentValue: Values) {
-  let res = []
-  let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
-  let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
-  for (let i=start; i < end; i++) {
-    res.push(board.cells[i][cell.y].value)
-  }
-
-  return countValues(res, board.winSeries, currentValue)
-
-}
-function checkHorizontal(cell: Cell, currentValue: Values) {
-  let res = []
-  let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
-  let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
-
-
-  for (let i=start; i <end; i++) {
-    res.push(board.cells[cell.x][i].value)
-  }
-  return countValues(res, board.winSeries, currentValue)
-}
-function checkDiagonal(cell: Cell, currentValue: Values) {
-  let res1 = []
-  let res2 = []
-  let x = cell.x
-  let y = cell.y
-
-  for (let i=-board.winSeries; i < board.winSeries; i++) {
-    let res11 = checkCell(x, Operators.DEC, y, Operators.DEC, i, currentValue)
-    let res22 = checkCell(x, Operators.INC, y, Operators.DEC, i, currentValue)
-    res1.push(res11)
-    res2.push(res22)
-  }
-  countValues(res1, board.winSeries, currentValue)
-  countValues(res2, board.winSeries, currentValue)
-
-}
-
 
 function checkWin(cell: Cell, currentValue: Values) {
   checkVertical(cell, currentValue)
@@ -173,35 +103,74 @@ function checkWin(cell: Cell, currentValue: Values) {
   checkDiagonal(cell, currentValue)
 }
 
-
-function countValues(array: (Values | null)[], winSeries: number, value: Values) {
-  console.log(winSeries)
-  let count = 0
-  for (let i = 0; i <= array.length - 1; i++ ) {
-    if (array[i] === value) {
-      count++
-    } else {
-      count = 0
-    }
-    if (count === winSeries) {
-      console.log("win")
-      winZnak.innerText = value
-      modal.classList.remove("hidden")
-
-    }
+export function checkVertical(cell: Cell, currentValue: Values) {
+  let res = []
+  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+  let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
+  let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
+  //Закидываем в массив значения со столбца для последующей проверки
+  for (let i=start; i < end; i++) {
+    res.push(board.cells[i][cell.y].value)
   }
 
+  return countValues(res, board.winSeries, currentValue) ? showModal(currentValue)  : ""
+
 }
-function checkCell(x:number, xOperator: string,  y:number,yOperator: string, i: number, currentValue: Values):Values | null {
-  let x1 = xOperator === Operators.DEC ? x-i : x+i
-  let y1 = yOperator === Operators.DEC ? y-i : y+i
+export function checkHorizontal(cell: Cell, currentValue: Values) {
+  let res = []
+  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+  let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
+  let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
+  //Закидываем в массив значения со строки для последующей проверки
+  for (let i=start; i <end; i++) {
+    res.push(board.cells[cell.x][i].value)
+  }
+  return countValues(res, board.winSeries, currentValue) ? showModal(currentValue) : ""
+}
+function checkDiagonal(cell: Cell, currentValue: Values) {
+  let res1 = []
+  let res2 = []
+  let x = cell.x
+  let y = cell.y
+  //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
+  for (let i=-board.winSeries; i < board.winSeries; i++) {
+    //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
+    let res11 = getValueInCell(board.cells, x, Operators.DEC, y, Operators.DEC, i, currentValue)
+    let res22 = getValueInCell(board.cells, x, Operators.INC, y, Operators.DEC, i, currentValue)
+    res1.push(res11)
+    res2.push(res22)
+  }
 
-  let a = x1 >= 0
-  let b = y1 >= 0
-  let c = x1 < board.size
-  let d = y1 < board.size
-  let condition = (a && b && c && d) ? board.cells[x1][y1].value === currentValue : false
+  countValues(res1, board.winSeries, currentValue) ? showModal(currentValue) : ""
+  countValues(res2, board.winSeries, currentValue) ? showModal(currentValue) : ""
 
-  return condition ? board.cells[x1][y1].value : null
+}
+
+size.addEventListener("input", handleSizeDesk)
+winseries.addEventListener("input", handleWinSeries)
+startBtn.addEventListener("click", rerenderDesk)
+
+
+
+function handleSizeDesk() {
+  board.size = +size.value
+}
+
+function handleWinSeries() {
+  board.winSeries = +winseries.value
+}
+
+function showModal(value: string) {
+  modal.classList.remove("hidden")
+  winZnak.innerText = value
+}
+
+function rerenderDesk() {
+  let board = new Board(+size.value, +winseries.value)
+  board.initial()
+  wrapperBoard.innerHTML = ""
+  stepHTMl.innerText = "0"
+  figureCurrent.innerText = "X"
+  renderBoard(board.cells)
 }
 
