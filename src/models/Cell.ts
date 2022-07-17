@@ -13,9 +13,6 @@ class Cell {
     this.id = Math.floor(Math.random() * (10000 - 1 + 1)) + 1; // случайное от 1 до 10000
   }
 
-  generateHTML() {
-
-  }
 
 }
 
