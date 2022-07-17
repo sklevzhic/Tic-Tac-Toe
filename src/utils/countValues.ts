@@ -5,7 +5,6 @@ export function countValues(array: (string | null)[], winSeries: number, value: 
   for (let i = 0; i <= array.length - 1; i++ ) {
     let tempCount = array[i] === value ? count + 1 : 0
     count = tempCount
-    console.log(count)
     if (tempCount === winSeries) return true
   }
 

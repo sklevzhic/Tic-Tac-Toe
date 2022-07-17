@@ -154,7 +154,7 @@ startBtn.addEventListener("click", rerenderDesk)
 
 
 
-function handleSizeDesk() {
+function handleSizeDesk(e: any) {
   board.size = +size.value
 }
 
@@ -168,7 +168,18 @@ function showModal(value: string) {
 }
 
 function rerenderDesk() {
-  board = new Board(+size.value, +winseries.value)
+  let sizeTemp = +size.value < 3 ? 3 : +size.value > 55 ? 55 : +size.value
+
+  let winSeriesTemp = +winseries.value < 3
+    ? 3
+    : +winseries.value > sizeTemp
+      ? sizeTemp
+      : +winseries.value
+
+  size.value = String(sizeTemp)
+  winseries.value = String(winSeriesTemp)
+
+  board = new Board(sizeTemp, winSeriesTemp)
   board.initial()
   wrapperBoard.innerHTML = ""
   stepHTMl.innerText = "0"
