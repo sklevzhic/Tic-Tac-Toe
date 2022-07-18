@@ -14,9 +14,17 @@ let winZnak = document.querySelector("#winZnak") as HTMLSpanElement
 let modal = document.querySelector("#modalWin") as HTMLDivElement
 let startBtn = document.querySelector("#start") as HTMLButtonElement
 
-// Инициализация доски по умолчанию
 let board = new Board(10,3)
 board.initial()
+
+if (localStorage.getItem("board") !== null) {
+  // @ts-ignore
+  let res = JSON.parse(localStorage.getItem("board"))
+  console.log(res)
+  board = {...res}
+}
+
+
 
 // Значение по умолчанию закидываем на страницу
 size.value = String(board.size)
@@ -29,6 +37,7 @@ renderBoard(board.cells)
 
 
 function renderBoard(array: Array<Array<Cell>>) {
+
   array.forEach((rowCells: Cell[]) => {
     let boardRow = document.createElement('div');
     boardRow.classList.add("flex")
@@ -68,9 +77,11 @@ function renderBoard(array: Array<Array<Cell>>) {
     })
     wrapperBoard.appendChild(boardRow)
   })
+
+  stepHTMl.innerText = String(board.step)
+  figureCurrent.innerText = getCurrentValue(board.step + 1)
+
 }
-
-
 function handlerStep(e: any , cell: Cell) {
   //Получаем текущий знак (X или 0)
   let currentValue = getCurrentValue(board.step)
@@ -94,16 +105,15 @@ function handlerStep(e: any , cell: Cell) {
 
   board.step++
   // После каждого хода проверка на победу
+  localStorage.setItem("board", JSON.stringify(board))
 
   checkWin(cell, currentValue)
 }
-
 function checkWin(cell: Cell, currentValue: Values) {
   checkVertical(cell, currentValue)
   checkHorizontal(cell, currentValue)
   checkDiagonal(cell, currentValue)
 }
-
 export function checkVertical(cell: Cell, currentValue: Values) {
   let res = []
   //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
@@ -165,6 +175,7 @@ function handleWinSeries() {
 function showModal(value: string) {
   modal.classList.remove("hidden")
   winZnak.innerText = value
+  localStorage.removeItem("board")
 }
 
 function rerenderDesk() {
@@ -182,8 +193,9 @@ function rerenderDesk() {
   board = new Board(sizeTemp, winSeriesTemp)
   board.initial()
   wrapperBoard.innerHTML = ""
-  stepHTMl.innerText = "0"
+
   modal.classList.add("hidden")
+  stepHTMl.innerText = String(board.step)
   figureCurrent.innerText = "X"
   renderBoard(board.cells)
 }
