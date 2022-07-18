@@ -6,7 +6,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-
 <div class="flex mx-auto overflow-hidden p-2">
   <div  class="overflow-hidden border-r shrink-0 basis-3/12">
     <div>
@@ -19,12 +18,12 @@
           <div class="flex justify-center items-center mb-1">
             <p class="text-sm font-semibold leading-7 text-slate-900 ">Размер сетки</p>
             <input type="number" id="size" class="max-w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
-            focus:border-blue-500 block p-1 ml-2" placeholder="" value="25" min="3" max="55" required>
+            focus:border-blue-500 block p-1 ml-2" placeholder="" value="3" min="3" max="55" required>
           </div>
           <div class="flex justify-center items-center">
             <p class="text-sm font-semibold leading-7 text-slate-900 ">Победная серия</p>
             <input type="number" id="winseries" class=" max-w-[100px] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500
-            focus:border-blue-500 block p-1 ml-2" placeholder="" value="10" min="3" max="55" required>
+            focus:border-blue-500 block p-1 ml-2" placeholder="" value="3" min="3" max="55" required>
           </div>
           <button id="start" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mt-2 rounded">Начать новую игру</button>
         </div>
@@ -39,7 +38,7 @@
 
           </div>
           <div class="flex justify-center items-center">
-            <p class="text-sm font-semibold leading-7 text-slate-900 ">Ход: <span id="figureCurrent">X</span></p>
+            <p class="text-sm font-semibold leading-7 text-slate-900 ">Ход: <span class="text-xl" id="figureCurrent">X</span></p>
 
           </div>
         </div>
@@ -49,15 +48,13 @@
     </div>
   </div>
 
-  <div class=" relative   overflow-scroll overflow-hidden max-h-[97vh] basis-9/12">
-    <div id="modalWin" class="absolute hidden top-1/2 left-1/2 p-4 w-full h-full bg-opacity-20 transform -translate-x-1/2 -translate-y-1/2 bg-red-200">
-        <div class="text-center items-center">Победа <span id="winZnak"></span></div>
-    </div>
-    <div class="wrapper flex flex-col">
-
-    </div>
+  <div class="relative overflow-scroll overflow-hidden max-h-[97vh] basis-9/12" id="board">
 
   </div>
+  <div id="modalWin" class="absolute hidden top-1/2 left-1/2 p-4 w-full h-full bg-opacity-20 transform -translate-x-1/2 -translate-y-1/2 bg-red-200">
+    <div class="text-center items-center">Победа <span id="winZnak"></span></div>
+  </div>
+
 </div>
 
 </body>
