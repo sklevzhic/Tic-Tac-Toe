@@ -1,9 +1,8 @@
 import Board from "./models/Board";
 import Cell from "./models/Cell";
 import {Operators, Values} from "./types/values";
-import { countValues } from "./utils/countValues";
 import { getCurrentValue } from "./utils/getCurrentValue";
-import { getValueInCell } from "./utils/getValueInCell";
+
 
 let wrapperBoard = document.querySelector(".wrapper") as HTMLDivElement
 let size = document.querySelector("#size") as HTMLInputElement
@@ -107,56 +106,56 @@ function handlerStep(e: any , cell: Cell) {
   // После каждого хода проверка на победу
   localStorage.setItem("board", JSON.stringify(board))
 
-  checkWin(cell, currentValue)
+  // checkWin(cell, currentValue)
 }
-function checkWin(cell: Cell, currentValue: Values) {
-  checkVertical(cell, currentValue)
-  checkHorizontal(cell, currentValue)
-  checkDiagonal(cell, currentValue)
-}
-export function checkVertical(cell: Cell, currentValue: Values) {
-  let res = []
-  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-  let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
-  let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
-  //Закидываем в массив значения со столбца для последующей проверки
-  for (let i=start; i < end; i++) {
-    res.push(board.cells[i][cell.y].value)
-  }
-
-  return countValues(res, board.winSeries, currentValue) ? showModal(currentValue)  : ""
-
-}
-export function checkHorizontal(cell: Cell, currentValue: Values) {
-  let res = []
-  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-  let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
-  let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
-  //Закидываем в массив значения со строки для последующей проверки
-  for (let i=start; i <end; i++) {
-    res.push(board.cells[cell.x][i].value)
-  }
-
-  return countValues(res, board.winSeries, currentValue) ? showModal(currentValue) : ""
-}
-function checkDiagonal(cell: Cell, currentValue: Values) {
-  let res1 = []
-  let res2 = []
-  let x = cell.x
-  let y = cell.y
-  //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
-  for (let i=-board.winSeries; i < board.winSeries; i++) {
-    //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
-    let res11 = getValueInCell(board.cells, x, Operators.DEC, y, Operators.DEC, i, currentValue)
-    let res22 = getValueInCell(board.cells, x, Operators.INC, y, Operators.DEC, i, currentValue)
-    res1.push(res11)
-    res2.push(res22)
-  }
-
-  countValues(res1, board.winSeries, currentValue) ? showModal(currentValue) : ""
-  countValues(res2, board.winSeries, currentValue) ? showModal(currentValue) : ""
-
-}
+// function checkWin(cell: Cell, currentValue: Values) {
+//   checkVertical(cell, currentValue)
+//   checkHorizontal(cell, currentValue)
+//   checkDiagonal(cell, currentValue)
+// }
+// export function checkVertical(cell: Cell, currentValue: Values) {
+//   let res = []
+//   //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+//   let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
+//   let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
+//   //Закидываем в массив значения со столбца для последующей проверки
+//   for (let i=start; i < end; i++) {
+//     res.push(board.cells[i][cell.y].value)
+//   }
+//
+//   return countValues(res, board.winSeries, currentValue) ? showModal(currentValue)  : ""
+//
+// }
+// export function checkHorizontal(cell: Cell, currentValue: Values) {
+//   let res = []
+//   //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+//   let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
+//   let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
+//   //Закидываем в массив значения со строки для последующей проверки
+//   for (let i=start; i <end; i++) {
+//     res.push(board.cells[cell.x][i].value)
+//   }
+//
+//   return countValues(res, board.winSeries, currentValue) ? showModal(currentValue) : ""
+// }
+// function checkDiagonal(cell: Cell, currentValue: Values) {
+//   let res1 = []
+//   let res2 = []
+//   let x = cell.x
+//   let y = cell.y
+//   //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
+//   for (let i=-board.winSeries; i < board.winSeries; i++) {
+//     //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
+//     let res11 = getValueInCell(board.cells, x, Operators.DEC, y, Operators.DEC, i, currentValue)
+//     let res22 = getValueInCell(board.cells, x, Operators.INC, y, Operators.DEC, i, currentValue)
+//     res1.push(res11)
+//     res2.push(res22)
+//   }
+//
+//   countValues(res1, board.winSeries, currentValue) ? showModal(currentValue) : ""
+//   countValues(res2, board.winSeries, currentValue) ? showModal(currentValue) : ""
+//
+// }
 
 size.addEventListener("input", handleSizeDesk)
 winseries.addEventListener("input", handleWinSeries)

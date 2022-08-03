@@ -1,4 +1,4 @@
-export function countValues(array: (string | null)[], winSeries: number, value: string) {
+export function checkElementsInLine(array: (string | null)[], winSeries: number, value: string) {
   // Счетчик значений в массиве, который пришел на проверку
   let count = 0
 
