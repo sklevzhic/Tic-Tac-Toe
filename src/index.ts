@@ -17,8 +17,8 @@ export function start() {
     "newSize": 3,
     "newWinSeries": 3,
     "users": [
-      {name: "Player ", win: 0, figure: Figures.FIGUREX},
-      {name: "Player ", win: 0, figure: Figures.FIGURE0},
+      {name: "Player", win: 0, figure: Figures.FIGUREX},
+      {name: "Player", win: 0, figure: Figures.FIGURE0},
     ]
   }
 
@@ -184,10 +184,10 @@ export function checkValuesInLine(cells: string[][], winSeriesInGame: number, ce
   let afterPositionX = getPosition("x", cell.x, line, 1)
   let afterPositionY = getPosition("y", cell.y, line, 1)
 
-  let beforePositionValue = cells[beforePositionY] ? cells[beforePositionY][beforePositionX] : undefined
-  let afterPositionValue = cells[afterPositionY] ? cells[afterPositionY][afterPositionX] : undefined
+  let beforeValue = cells[beforePositionY] ? cells[beforePositionY][beforePositionX] : undefined
+  let afterValue = cells[afterPositionY] ? cells[afterPositionY][afterPositionX] : undefined
   let currentValue = cells[cell.y][cell.x]
-  if ((beforePositionValue === currentValue) || (currentValue === afterPositionValue)) {
+  if ((beforeValue === currentValue) || (currentValue === afterValue)) {
     for (let i = -winSeriesInGame + 1; i < winSeriesInGame; i++) {
       let x = getPosition("x", cell.x, line, i)
       let y = getPosition("y", cell.y, line, i)
