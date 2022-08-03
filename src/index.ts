@@ -1,43 +1,48 @@
-import Board from "./models/Board"
+import Board  from "./models/Board"
 import Cell from "./models/Cell";
-import {Values} from "./types/values";
 import { getCurrentValue } from "./utils/getCurrentValue";
+import {Operators, Values} from "./types/values";
+import { checkElementsInLine } from "./utils/checkElementsInLine";
+import {getValueInCell} from "./utils/getValueInCell";
 
 
-function start() {
-  //Инициализауия доски
-  let board = new Board(10, 3)
-  board.initial()
+let currentStep = document.querySelector("#step") as HTMLSpanElement
+let currentFigure = document.querySelector("#figureCurrent") as HTMLSpanElement
+let boardWrapper = document.querySelector("#board") as HTMLDivElement
+let sizeInput = document.querySelector("#size") as HTMLInputElement
+let winSeriesInput = document.querySelector("#winSeries") as HTMLInputElement
+let startBtn = document.querySelector("#start") as HTMLButtonElement
 
-  //Проверка в localStorage
-  if (localStorage.getItem("board")) {
-    let value = localStorage.getItem("board")
-    let res = JSON.parse(value || "")
-    board = {...res}
-  }
 
-  //рендер доски первичный
-  rerenderDesk(board)
+//Инициализауия доски
+let board = new Board(3, 3)
+board.initial()
 
+//Проверка в localStorage
+if (localStorage.getItem("board")) {
+  let value = localStorage.getItem("board")
+  let res = JSON.parse(value || "")
+  board = {...res}
 }
 
-start()
+//Отрисовка доски и информации
+rerenderTemplate(board);
 
-
-function rerenderDesk(board: Board) {
-  // Обновить информацию
-  (document.querySelector("#step") as HTMLSpanElement).innerText = String(board.step);
-  (document.querySelector("#figureCurrent") as HTMLSpanElement).innerText = getCurrentValue(board.step + 1);
-  // Перерисовать доску
-  let boardTemplate = renderTemplateBoard(board.cells);
-  (document.querySelector("#board") as HTMLDivElement).appendChild(boardTemplate)
+export function rerenderTemplate(board: Board) {
+  boardWrapper.innerHTML = ""
+  currentStep.innerText = String(board.step);
+  currentFigure.innerText = getCurrentValue(board.step + 1);
+  sizeInput.value = String(board.size)
+  winSeriesInput.value = String(board.winSeries);
+  let templateBoard = renderBoard(board)
+  boardWrapper.appendChild(templateBoard);
 }
-function renderTemplateBoard(cells: Array<Array<Cell>>): HTMLDivElement {
+export function renderBoard(board: Board): HTMLDivElement {
   let wrapper = document.createElement('div');
   wrapper.classList.add("wrapper")
   wrapper.classList.add("flex")
   wrapper.classList.add("flex-col")
-  cells.forEach((rowCells: Cell[]) => {
+  board.cells.forEach((rowCells: Cell[]) => {
     let boardRow = document.createElement('div');
     boardRow.classList.add("flex");
     rowCells.forEach((cell: Cell) => {
@@ -62,10 +67,9 @@ function renderTemplateBoard(cells: Array<Array<Cell>>): HTMLDivElement {
         boardCell.classList.add("cursor-default");
       }
       if (!cell.value) {
-        boardCell.addEventListener("click", (e) => handlerStep(e, cell))
+        boardCell.addEventListener("click", () => handlerStep(cell))
         boardCell.classList.add("text-gray-700");
         boardCell.classList.add("cursor-pointer");
-        // boardCell.classList.add("text-opacity-0")
         boardCell.classList.add("hover:bg-gray-200");
         boardCell.classList.add("hover:text-opacity-50");
       }
@@ -76,174 +80,96 @@ function renderTemplateBoard(cells: Array<Array<Cell>>): HTMLDivElement {
   })
   return wrapper
 }
+export function handlerStep(cell:Cell) {
+  ++board.step
+  board.cells[cell.x][cell.y].value = getCurrentValue(board.step)
+  rerenderTemplate(board)
+  localStorage.setItem("board", JSON.stringify(board))
 
+  checkWin(cell, getCurrentValue(board.step))
+}
 
+function checkWin(cell: Cell, currentValue: Values) {
 
+  if (
+    checkVertical(cell, currentValue) ||
+    checkHorizontal(cell, currentValue) ||
+    checkDiagonals(cell, currentValue)
+  ) {
+    showModal(currentValue)
+  }
 
+}
+export function checkVertical(cell: Cell, currentValue: Values) {
+  let res = []
+  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+  let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
+  let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
+  //Закидываем в массив значения со столбца для последующей проверки
+  for (let i=start; i < end; i++) {
+    res.push(board.cells[i][cell.y].value)
+  }
+  return checkElementsInLine(res, board.winSeries, currentValue)
+}
+export function checkHorizontal(cell: Cell, currentValue: Values) {
+  let res = []
+  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
+  let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
+  let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
+  //Закидываем в массив значения со строки для последующей проверки
+  for (let i=start; i <end; i++) {
+    res.push(board.cells[cell.x][i].value)
+  }
 
+  return checkElementsInLine(res, board.winSeries, currentValue)
+}
+function checkDiagonals(cell: Cell, currentValue: Values) {
+  let res1 = []
+  let res2 = []
+  //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
+  for (let i=-board.winSeries; i < board.winSeries; i++) {
+    //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
+    let res11 = getValueInCell(board.cells, cell.x, Operators.DEC, cell.y, Operators.DEC, i, currentValue)
+    let res22 = getValueInCell(board.cells, cell.x, Operators.INC, cell.y, Operators.DEC, i, currentValue)
+    res1.push(res11)
+    res2.push(res22)
+  }
 
+  return (checkElementsInLine(res1, board.winSeries, currentValue) || checkElementsInLine(res2, board.winSeries, currentValue))
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-// import Board from "./models/Board";
-// import Cell from "./models/Cell";
-// import {Operators, Values} from "./types/values";
-// import { countValues } from "./utils/countValues";
-// import { getCurrentValue } from "./utils/getCurrentValue";
-// import { getValueInCell } from "./utils/getValueInCell";
-//
-// let wrapperBoard = document.querySelector(".wrapper") as HTMLDivElement
-// let size = document.querySelector("#size") as HTMLInputElement
-// let winseries = document.querySelector("#winseries") as HTMLInputElement
-// let figureCurrent = document.querySelector("#figureCurrent") as HTMLSpanElement
-// let stepHTMl = document.querySelector("#step") as HTMLSpanElement
-// let winZnak = document.querySelector("#winZnak") as HTMLSpanElement
-// let modal = document.querySelector("#modalWin") as HTMLDivElement
-// let startBtn = document.querySelector("#start") as HTMLButtonElement
-
-
-
-
-
-
-
-
-
-function handlerStep(event: MouseEvent, cell: Cell) {
-    // Получаем текущий знак (X или 0)
-  // let currentValue = getCurrentValue(board.step)
-  //В массиве ячеек меняем значение
-  // board.cells[cell.x][cell.y].value = "1"
+function showModal(value: string) {
+  let modal = `
+    <div  class="absolute top-1/2 left-1/2 p-4 w-full h-full bg-opacity-20 transform -translate-x-1/2 -translate-y-1/2 bg-red-200">
+    <div class="text-center items-center">Победа <span>${value}</span></div>
+  </div> `
+  boardWrapper.innerHTML += modal
+  localStorage.removeItem("board")
 }
 
 
+sizeInput.addEventListener("blur", handleSizeDesk)
+winSeriesInput.addEventListener("blur", handleWinSeries)
+startBtn.addEventListener("click", handleNewGame)
 
-// function handlerStep1(e: any , cell: Cell) {
+function handleSizeDesk() {
+  sizeInput.value = String(+sizeInput.value < 3 ? 3 : +sizeInput.value > 55 ? 55 : +sizeInput.value)
+}
+function handleWinSeries() {
+  let winSeriesTemp = +winSeriesInput.value < 3
+    ? 3
+    : +winSeriesInput.value > board.size
+      ? board.size
+      : +winSeriesInput.value
 
-//   //Выводим на экран следующий ход и текущий ход
-//   stepHTMl.innerText = String(board.step + 1)
-//   figureCurrent.innerText = getCurrentValue(board.step + 1)
-//
-//
+  winSeriesInput.value = String(winSeriesTemp)
+}
+function handleNewGame() {
+  board = new Board(+sizeInput.value, +winSeriesInput.value)
+  board.initial()
+  board.size = +sizeInput.value
+  board.winSeries = +winSeriesInput.value
 
-//   //Для оптимизации в ячейку ставиться текущий знак (X или 0), не перерисовывая всю доску
-//   e.target.innerText = currentValue
-//
-//   if (currentValue === Values.VALUE_X) {
-//     e.target.classList.add("text-blue-700")
-//   }
-//   if (currentValue === Values.VALUE_0) {
-//     e.target.classList.add("text-red-700")
-//   }
-//   e.target.classList.add("pointer-events-none")
-//
-//   board.step++
-//   // После каждого хода проверка на победу
-//   localStorage.setItem("board", JSON.stringify(board))
-//
-//   // checkWin(cell, currentValue)
-// }
-
-
-// function checkWin(cell: Cell, currentValue: Values) {
-//   checkVertical(cell, currentValue)
-//   checkHorizontal(cell, currentValue)
-//   checkDiagonal(cell, currentValue)
-// }
-// export function checkVertical(cell: Cell, currentValue: Values) {
-//   let res = []
-//   //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-//   let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
-//   let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
-//   //Закидываем в массив значения со столбца для последующей проверки
-//   for (let i=start; i < end; i++) {
-//     res.push(board.cells[i][cell.y].value)
-//   }
-//
-//   return countValues(res, board.winSeries, currentValue) ? showModal(currentValue)  : ""
-//
-// }
-// export function checkHorizontal(cell: Cell, currentValue: Values) {
-//   let res = []
-//   //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-//   let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
-//   let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
-//   //Закидываем в массив значения со строки для последующей проверки
-//   for (let i=start; i <end; i++) {
-//     res.push(board.cells[cell.x][i].value)
-//   }
-//
-//   return countValues(res, board.winSeries, currentValue) ? showModal(currentValue) : ""
-// }
-// function checkDiagonal(cell: Cell, currentValue: Values) {
-//   let res1 = []
-//   let res2 = []
-//   let x = cell.x
-//   let y = cell.y
-//   //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
-//   for (let i=-board.winSeries; i < board.winSeries; i++) {
-//     //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
-//     let res11 = getValueInCell(board.cells, x, Operators.DEC, y, Operators.DEC, i, currentValue)
-//     let res22 = getValueInCell(board.cells, x, Operators.INC, y, Operators.DEC, i, currentValue)
-//     res1.push(res11)
-//     res2.push(res22)
-//   }
-//
-//   countValues(res1, board.winSeries, currentValue) ? showModal(currentValue) : ""
-//   countValues(res2, board.winSeries, currentValue) ? showModal(currentValue) : ""
-//
-// }
-//
-// size.addEventListener("input", handleSizeDesk)
-// winseries.addEventListener("input", handleWinSeries)
-// startBtn.addEventListener("click", rerenderDesk)
-//
-//
-//
-// function handleSizeDesk(e: any) {
-//   board.size = +size.value
-// }
-//
-// function handleWinSeries() {
-//   board.winSeries = +winseries.value
-// }
-//
-// function showModal(value: string) {
-//   modal.classList.remove("hidden")
-//   winZnak.innerText = value
-//   localStorage.removeItem("board")
-// }
-//
-// function rerenderDesk() {
-//   let sizeTemp = +size.value < 3 ? 3 : +size.value > 55 ? 55 : +size.value
-//
-//   let winSeriesTemp = +winseries.value < 3
-//     ? 3
-//     : +winseries.value > sizeTemp
-//       ? sizeTemp
-//       : +winseries.value
-//
-//   size.value = String(sizeTemp)
-//   winseries.value = String(winSeriesTemp)
-//
-//   board = new Board(sizeTemp, winSeriesTemp)
-//   board.initial()
-//   wrapperBoard.innerHTML = ""
-//
-//   modal.classList.add("hidden")
-//   stepHTMl.innerText = String(board.step)
-//   figureCurrent.innerText = "X"
-//   renderBoard(board.cells)
-// }
-//
+  rerenderTemplate(board)
+}
 

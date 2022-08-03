@@ -35,32 +35,32 @@ let arr = [
 ]
 
 describe("Проверка значения в ячейке", () => {
-  test("пустой масссив", () => {
-    expect(getValueInCell([[]],5,Operators.INC,2,Operators.DEC,1,Values.VALUE_0)).toBeFalsy()
-  })
-
-  test("Проверка выбранного значения", () => {
-    expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).toBe(Values.VALUE_0)
-    expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).not.toBe(Values.VALUE_X)
-    expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).not.toBe(null)
-  })
-
-  test("Проверка схожества выбранного значения и стоящего рядом на диагонали", () => {
-    let selectedValue =  Values.VALUE_X
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,0, selectedValue)).toBe(Values.VALUE_X)
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).toBe(Values.VALUE_X)
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).not.toBe(Values.VALUE_0)
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).not.toBe(null)
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,2, selectedValue)).toBe(null)
-    expect(getValueInCell(arr,3,Operators.INC,3, Operators.INC,1, selectedValue)).not.toBe(Values.VALUE_X)
-    expect(getValueInCell(arr,3,Operators.INC,3, Operators.INC,1, selectedValue)).toBe(null)
-  })
-
-  test("Выход за пределы массива", () => {
-    let selectedValue =  Values.VALUE_X
-    expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,5, selectedValue)).toBe(null)
-    expect(getValueInCell(arr,1,Operators.DEC,2, Operators.DEC,5, selectedValue)).toBe(null)
-    expect(getValueInCell(arr,55,Operators.DEC,55, Operators.DEC,100, selectedValue)).toBe(null)
-  })
+  // test("пустой масссив", () => {
+  //   expect(getValueInCell([[]],5,Operators.INC,2,Operators.DEC,1,Values.VALUE_0)).toBeFalsy()
+  // })
+  //
+  // test("Проверка выбранного значения", () => {
+  //   expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).toBe(Values.VALUE_0)
+  //   expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).not.toBe(Values.VALUE_X)
+  //   expect(getValueInCell(arr,4,Operators.INC,0, Operators.DEC,0, Values.VALUE_0)).not.toBe(null)
+  // })
+  //
+  // test("Проверка схожества выбранного значения и стоящего рядом на диагонали", () => {
+  //   let selectedValue =  Values.VALUE_X
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,0, selectedValue)).toBe(Values.VALUE_X)
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).toBe(Values.VALUE_X)
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).not.toBe(Values.VALUE_0)
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,1, selectedValue)).not.toBe(null)
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,2, selectedValue)).toBe(null)
+  //   expect(getValueInCell(arr,3,Operators.INC,3, Operators.INC,1, selectedValue)).not.toBe(Values.VALUE_X)
+  //   expect(getValueInCell(arr,3,Operators.INC,3, Operators.INC,1, selectedValue)).toBe(null)
+  // })
+  //
+  // test("Выход за пределы массива", () => {
+  //   let selectedValue =  Values.VALUE_X
+  //   expect(getValueInCell(arr,3,Operators.DEC,3, Operators.DEC,5, selectedValue)).toBe(null)
+  //   expect(getValueInCell(arr,1,Operators.DEC,2, Operators.DEC,5, selectedValue)).toBe(null)
+  //   expect(getValueInCell(arr,55,Operators.DEC,55, Operators.DEC,100, selectedValue)).toBe(null)
+  // })
 
 })

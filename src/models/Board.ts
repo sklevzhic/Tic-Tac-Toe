@@ -12,13 +12,14 @@ class Board {
   }
 
   initial() {
-    let cells = initialBord(this.size)
-    this.cells = cells
+    this.cells = initialBoard(this.size)
   }
 
 }
 
-export function initialBord(size: number) {
+export default Board
+
+export function initialBoard(size: number) {
   let desk: Array<Array<Cell>> = []
   for (let i = 0; i < size; i++) {
     let row: Cell[] = []
@@ -31,4 +32,7 @@ export function initialBord(size: number) {
   return desk
 }
 
-export default Board
+
+
+
+
