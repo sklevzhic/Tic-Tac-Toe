@@ -1,7 +1,7 @@
-import Board, {checkWinSeriesInLine, getValueInCell} from "./models/Board"
+import Board, {checkWin, checkWinSeriesInLine} from "./models/Board"
 import Cell from "./models/Cell";
 import {getCurrentValue} from "./models/Board";
-import {Operators, Values} from "./types/values";
+import { Values } from "./types/values";
 
 let currentStep = document.querySelector("#step") as HTMLSpanElement
 let currentFigure = document.querySelector("#figureCurrent") as HTMLSpanElement
@@ -10,10 +10,8 @@ let sizeInput = document.querySelector("#size") as HTMLInputElement
 let winSeriesInput = document.querySelector("#winSeries") as HTMLInputElement
 let startBtn = document.querySelector("#start") as HTMLButtonElement
 
-
-//Инициализауия доски
+//Инициализация доски
 let board = new Board(3, 3)
-board.initial()
 
 //Проверка в localStorage
 if (localStorage.getItem("board")) {
@@ -34,7 +32,6 @@ export function rerenderTemplate(board: Board) {
   let templateBoard = renderBoard(board)
   boardWrapper.appendChild(templateBoard);
 }
-
 export function renderBoard(board: Board): HTMLDivElement {
   let wrapper = document.createElement('div');
   wrapper.classList.add("wrapper")
@@ -44,7 +41,6 @@ export function renderBoard(board: Board): HTMLDivElement {
     let boardRow = document.createElement('div');
     boardRow.classList.add("flex");
     rowCells.forEach((cell: Cell) => {
-
       let boardCell = document.createElement('div');
       boardCell.classList.add("border");
       boardCell.classList.add("w-8");
@@ -65,7 +61,7 @@ export function renderBoard(board: Board): HTMLDivElement {
         boardCell.classList.add("cursor-default");
       }
       if (!cell.value) {
-        boardCell.addEventListener("click", () => handlerStep(cell))
+        boardCell.addEventListener("click", () => handlerCell(cell))
         boardCell.classList.add("text-gray-700");
         boardCell.classList.add("cursor-pointer");
         boardCell.classList.add("hover:bg-gray-200");
@@ -78,77 +74,15 @@ export function renderBoard(board: Board): HTMLDivElement {
   })
   return wrapper
 }
-
-export function handlerStep(cell: Cell) {
+export function handlerCell(cell: Cell) {
   ++board.step
   board.cells[cell.x][cell.y].value = getCurrentValue(board.step)
   rerenderTemplate(board)
   localStorage.setItem("board", JSON.stringify(board))
 
-  checkWin(cell, getCurrentValue(board.step))
-}
-
-//Проверка победы
-function checkWin(cell: Cell, currentValue: Values) {
-  console.log("cell", cell)
-  checkMainDiagonal(cell, currentValue)
-  if (checkVertical(cell, currentValue) || checkHorizontal(cell, currentValue)) {
-    showModal(currentValue)
+  if (checkWin(board.cells, board.winSeries, cell, getCurrentValue(board.step))) {
+    showModal(getCurrentValue(board.step))
   }
-}
-
-export function checkVertical(cell: Cell, currentValue: Values) {
-  let res = []
-  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-  let start = cell.x - board.winSeries >= 0 ? cell.x - board.winSeries : 0
-  let end = cell.x + board.winSeries >= board.cells.length ? board.cells.length : cell.x + board.winSeries
-  //Закидываем в массив значения со столбца для последующей проверки
-  for (let i = start; i < end; i++) {
-    res.push(board.cells[i][cell.y].value)
-  }
-  return checkWinSeriesInLine(res, board.winSeries, currentValue)
-}
-
-export function checkHorizontal(cell: Cell, currentValue: Values) {
-  let res = []
-  //Для оптимизации не проверяется вся строка, а проверяем диапазон  -winSeries 0 winSeries
-  let start = cell.y - board.winSeries > 0 ? cell.y - board.winSeries : 0
-  let end = cell.y + board.winSeries >= board.cells.length ? board.cells.length : cell.y + board.winSeries
-  //Закидываем в массив значения со строки для последующей проверки
-  for (let i = start; i < end; i++) {
-    res.push(board.cells[cell.x][i].value)
-  }
-
-  return checkWinSeriesInLine(res, board.winSeries, currentValue)
-}
-
-export function checkMainDiagonal(cell: Cell, currentValue: Values) {
-
-  for (let i = -board.winSeries; i <= board.winSeries; i++) {
-    console.log(cell.x - i)
-    console.log(cell.y + i)
-  }
-}
-
-export function checkSecondaryDiagonal(cell: Cell, currentValue: Values) {
-
-}
-
-function checkDiagonals(cell: Cell, currentValue: Values) {
-  // let res1 = []
-  // let res2 = []
-  // //Для оптимизации не проверяется вся диагональ, а проверяем диапазон  -winSeries 0 winSeries
-  // for (let i=-board.winSeries; i < board.winSeries; i++) {
-  //   //Проходим по диапазону ячеек и пушим в массив для проверки по двум диагоналям
-  //   let res11 = getValueInCell(board.cells, cell.x, Operators.DEC, cell.y, Operators.DEC, i, currentValue)
-  //   let res22 = getValueInCell(board.cells, cell.x, Operators.INC, cell.y, Operators.DEC, i, currentValue)
-  //   res1.push(res11)
-  //   res2.push(res22)
-  // }
-  // let x = 1
-  //
-  // // return (checkWinSeriesInLine(res1, board.winSeries, currentValue) || checkWinSeriesInLine(res2, board.winSeries, currentValue))
-  // return true
 }
 
 //В случае победы - показ модального окна
@@ -169,7 +103,6 @@ startBtn.addEventListener("click", handleNewGame)
 function handleSizeDesk() {
   sizeInput.value = String(+sizeInput.value < 3 ? 3 : +sizeInput.value > 55 ? 55 : +sizeInput.value)
 }
-
 function handleWinSeries() {
   let winSeriesTemp = +winSeriesInput.value < 3
     ? 3
@@ -179,10 +112,8 @@ function handleWinSeries() {
 
   winSeriesInput.value = String(winSeriesTemp)
 }
-
 function handleNewGame() {
   board = new Board(+sizeInput.value, +winSeriesInput.value)
-  board.initial()
   board.size = +sizeInput.value
   board.winSeries = +winSeriesInput.value
 

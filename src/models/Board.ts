@@ -1,25 +1,24 @@
 import Cell from "./Cell"
-import {Operators, Values} from "../types/values";
+import {Values} from "../types/values";
 
 class Board {
   size: number
-  cells: Array<Array<Cell>> = []
+  cells: Array<Array<Cell>>
   winSeries: number
   step: number
+
   constructor(size: number, winSeries: number, step: number = 0) {
     this.size = size
     this.step = step
+    this.cells = initialBoard(size)
     this.winSeries = winSeries
-  }
-
-  initial() {
-    this.cells = initialBoard(this.size)
   }
 
 }
 
 export default Board
 
+//Инициализация доски
 export function initialBoard(size: number) {
   let desk: Array<Array<Cell>> = []
   for (let i = 0; i < size; i++) {
@@ -31,11 +30,85 @@ export function initialBoard(size: number) {
   }
   return desk
 }
+//Получение текущей фигуры
 export function getCurrentValue(step: number): Values {
   return step % 2 ? Values.VALUE_X : Values.VALUE_0
 }
-export function checkWinSeriesInLine(array: (string | null)[], winSeries: number, value: string) {
-  // Счетчик значений в массиве, который пришел на проверку
+
+
+// Проверка победы
+export function checkWin(cells: Cell[][], winSeries: number, cell: Cell, currentValue: Values): boolean {
+  // Vertical
+  // let x = cell.x + i
+  // let y = cell.y
+
+  // Horizontal
+  // let x = cell.x
+  // let y = cell.y + i
+
+  // MainDiagonal
+  // let x = cell.x + i
+  // let y = cell.y + i
+
+  // SecondaryDiagonal
+  // let x = cell.x - i
+  // let y = cell.y + i
+  return (
+    checkWinInVertical(cells, winSeries, cell, currentValue)
+    || checkWinInHorizontal(cells, winSeries, cell, currentValue)
+    || checkWinInMainDiagonal(cells, winSeries, cell, currentValue)
+    || checkWinInSecondaryDiagonal(cells, winSeries, cell, currentValue)
+  )
+}
+export function checkWinInVertical(cells:Cell[][], winSeries: number, cell: Cell, currentValue: Values) {
+  let res = []
+  for (let i = -winSeries + 1; i < winSeries; i++) {
+    let x = cell.x + i
+    let y = cell.y
+    if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
+      res.push(cells[x][y].value)
+    }
+  }
+
+  return checkWinSeriesInLine(res, winSeries, currentValue)
+}
+export function checkWinInHorizontal(cells:Cell[][], winSeries: number, cell: Cell, currentValue: Values) {
+  let res = []
+
+  for (let i = -winSeries + 1; i < winSeries; i++) {
+    let x = cell.x
+    let y = cell.y + i
+    if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
+      res.push(cells[x][y].value)
+    }
+  }
+
+  return checkWinSeriesInLine(res, winSeries, currentValue)
+}
+export function checkWinInMainDiagonal(cells:Cell[][], winSeries: number, cell: Cell, currentValue: Values) {
+  let res = []
+  for (let i = -winSeries + 1; i < winSeries; i++) {
+    let x = cell.x + i
+    let y = cell.y + i
+    if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
+      res.push(cells[x][y].value)
+    }
+  }
+  return checkWinSeriesInLine(res, winSeries, currentValue)
+}
+export function checkWinInSecondaryDiagonal(cells:Cell[][], winSeries: number, cell: Cell, currentValue: Values) {
+  let res = []
+  for (let i = -winSeries + 1; i < winSeries; i++) {
+    let x = cell.x - i
+    let y = cell.y + i
+    if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
+      res.push(cells[x][y].value)
+    }
+  }
+  return checkWinSeriesInLine(res, winSeries, currentValue)
+}
+
+export function checkWinSeriesInLine(array: (string | null)[], winSeries: number, value: string): boolean {
   let count = 0
   for (let i = 0; i <= array.length - 1; i++ ) {
     let tempCount = array[i] === value ? count + 1 : 0
@@ -44,21 +117,6 @@ export function checkWinSeriesInLine(array: (string | null)[], winSeries: number
   }
   return false
 }
-export function getValueInCell(array: Cell[][], x:number, xOperator: string,  y:number, yOperator: string, i: number, currentValue: Values):Values | null {
-  debugger
-  let x1 = xOperator === Operators.DEC ? x-i : x+i
-  let y1 = yOperator === Operators.DEC ? y-i : y+i
-  let a = x1 >= 0
-  let b = y1 >= 0
-  let c = x1 < array.length
-  let d = y1 < array.length
-  let condition = (a && b && c && d) ? array[x1][y1].value === currentValue : false
-
-  return condition ? array[x1][y1].value : null
-}
-
-
-
 
 
 
