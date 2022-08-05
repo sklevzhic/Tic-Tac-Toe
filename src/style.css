@@ -1,0 +1,82 @@
+.wrapper {
+  margin: 0;
+  font-size: 18px;
+  padding: 0;
+  display: flex;
+}
+
+.sidebar {
+  width: 20vw;
+}
+
+.settingsWrapper, .informationWrapper {
+  padding: 5px;
+  border: 1px solid #e3e3e3;
+  margin-bottom: 5px;
+}
+
+.settingsWrapper  label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.title {
+  margin: 0;
+  padding: 5px;
+  text-align: center;
+  border-bottom: 2px solid gray;
+}
+
+.main {
+  position: relative;
+  padding: 5px;
+  width: 75vw;
+  height: 95vh;
+  overflow: auto;
+}
+
+
+.cell {
+  display: block;
+  width: 55px;
+  height: 55px;
+  border: 1px solid #c9c9c9;
+}
+
+.cell:hover {
+  background: gray;
+}
+
+.cells__wrapper {
+  display: flex;
+}
+
+.cells__row {
+  display: flex;
+  flex-direction: column;
+}
+
+.disable {
+  background: #adadad;
+}
+
+.overlay {
+  position: fixed;
+  background: rgba(128, 128, 128, 0.19);
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+.content {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  background: white;
+}
+
+.board {
+  position: relative;
+}
+
