@@ -21,8 +21,9 @@
 }
 
 .title {
-  margin: 0;
   padding: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
   text-align: center;
   border-bottom: 2px solid gray;
 }
@@ -39,25 +40,38 @@
 .cell {
   display: block;
   width: 55px;
+  font-size: 35px;
+  line-height: 55px;
+  text-align: center;
   height: 55px;
+  cursor: pointer;
   border: 1px solid #c9c9c9;
 }
 
+.cell__0 {
+  color: red;
+}
+
+.cell__X {
+  color: blue;
+}
+
 .cell:hover {
-  background: gray;
+  background: #d4d4d4;
 }
 
 .cells__wrapper {
   display: flex;
+  flex-direction: column;
 }
 
 .cells__row {
   display: flex;
-  flex-direction: column;
 }
 
 .disable {
-  background: #adadad;
+  background: #e1e1e1;
+  pointer-events: none;
 }
 
 .overlay {
@@ -72,11 +86,19 @@
 .content {
   width: 200px;
   height: 200px;
-  margin: auto;
-  background: white;
+  margin: 100px auto;
+  padding: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.63);
 }
 
 .board {
   position: relative;
+}
+
+.button {
+  background: #d0d0d0;
+  font-size: 20px;
+  margin-top: 20px;
 }
 
