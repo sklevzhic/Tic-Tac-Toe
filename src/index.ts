@@ -1,90 +1,102 @@
 import "./style.css"
 import {ICell} from "./types/ICell";
-import {settings} from "./components/settings";
-import {information} from "./components/information";
 import {board, getCurrentFigure} from "./components/board";
 import {Figures} from "./types/figures";
-import {ILines, ILine} from "./models/ILine";
-import {modal} from "./components/modal";
+import {ILine, ILines} from "./types/ILine";
+import {getModalTemplate} from "./components/modal";
+import {renderSidebar} from "./components/sidebar";
+import {IBoard} from "./types/IBoard";
 
-function start() {
-  let size = 5
-  let winSeriesInGame = 3
+export function start() {
+  let boardValues: IBoard = {
+    "size": 3,
+    "winSeriesInGame": 3,
+    "step": 0,
+    "cells": initialCells(3),
+    "newSize": 3,
+    "newWinSeries": 3
+  }
 
-  let step = 0
-  let cells = initialCells(size)
-
-  let wrapper = document.createElement("div")
+  // Рендер элементов
+  let wrapper = <HTMLDivElement>document.createElement("div")
   wrapper.classList.add("wrapper")
 
-  //
-  let sidebar = document.createElement("div")
-  sidebar.classList.add("sidebar")
-
-  let settingsWrapper = <HTMLDivElement>document.createElement("div")
-  settingsWrapper.classList.add("settingsWrapper")
-  settingsWrapper.appendChild(settings(handlerNewGame))
-
-  let informationWrapper = <HTMLDivElement>document.createElement("div")
-  informationWrapper.classList.add("informationWrapper")
-  informationWrapper.appendChild(information(step, winSeriesInGame))
-
-  sidebar.appendChild(settingsWrapper)
-  sidebar.appendChild(informationWrapper)
-
-  let main = document.createElement("div")
+  let main = <HTMLDivElement>document.createElement("div")
   main.classList.add("main")
   let boardWrapper = <HTMLDivElement>document.createElement("div")
   boardWrapper.classList.add("board")
   boardWrapper.addEventListener("click", handlerCell)
-  boardWrapper.appendChild(board(cells))
+  boardWrapper.appendChild(board(boardValues.cells))
 
   main.appendChild(boardWrapper)
-
-  wrapper.appendChild(sidebar)
+  let sideBarWrapper = <HTMLDivElement>document.createElement("div")
+  let sidebar = renderSidebar(boardValues, handlerNewGame)
+  sideBarWrapper.appendChild(sidebar)
+  wrapper.appendChild(sideBarWrapper)
   wrapper.appendChild(main)
   document.body.appendChild(wrapper)
 
+  // Проверка локалсторедж
+  if (localStorage.getItem("board")) {
+    let data = localStorage.getItem("board")
+    if (data) {
+      boardValues = JSON.parse(data)
+      updateBoard()
+      updateSidebar()
+    }
+  }
+
   //Старт новой игры
-  function handlerNewGame(newSize: number = size, newWinSeries: number = winSeriesInGame) {
-    size = newSize
-    winSeriesInGame = newWinSeries
+  function handlerNewGame(newSize: number = boardValues.size, newWinSeries: number = boardValues.winSeriesInGame) {
+    let size = Number.isInteger(newSize) ? newSize : boardValues.size
+    let boardNew: IBoard = {
+      size: size,
+      winSeriesInGame: newWinSeries,
+      cells: initialCells(size),
+      step: 0,
+      newSize: size,
+      newWinSeries: newWinSeries
+    }
+    boardValues = boardNew
 
-    cells = initialCells(size)
-    step = 0
-
-    boardWrapper.innerHTML = ""
-    boardWrapper.appendChild(board(cells))
-
-    informationWrapper.innerHTML = ""
-    informationWrapper.appendChild(information(step, winSeriesInGame))
-
+    updateBoard()
+    updateSidebar()
   }
 
   // Обработчик клика на ячейку
-  function handlerCell(event: MouseEvent, currentFigure: Figures = getCurrentFigure(step)) {
+  function handlerCell(event: MouseEvent, currentFigure: Figures = getCurrentFigure(boardValues.step)) {
     let eventTarget = event.target as HTMLDivElement
-    if (eventTarget.classList.contains("cell")) {
+    if (eventTarget.classList.contains("cell") && !(eventTarget.classList.contains("disable"))) {
       let x = Number(eventTarget.getAttribute("data-x"));
       let y = Number(eventTarget.getAttribute("data-y"));
       let cell: ICell = {x, y}
 
-      cells[Number(x)][Number(y)] = currentFigure
-      eventTarget.innerText = currentFigure
-      step++
-      eventTarget.classList.add("disable")
-      if (checkWin(cells, cell, winSeriesInGame, currentFigure)) {
-        let modalTemplate = modal(currentFigure, handlerNewGame)
-        main.appendChild(modalTemplate)
+      boardValues.cells[Number(y)][Number(x)] = currentFigure
+      boardValues.step++
+
+      updateBoard()
+      updateSidebar()
+      saveToLocalStorage("board", JSON.stringify(boardValues))
+
+      if (checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, currentFigure)) {
+        let modalTemplate = getModalTemplate(currentFigure, handlerNewGame)
+        boardWrapper.appendChild(modalTemplate)
+        localStorage.removeItem("board")
       }
-      informationWrapper.innerHTML = ""
-      informationWrapper.appendChild(information(step, winSeriesInGame))
     }
   }
+  function updateSidebar() {
+    sideBarWrapper.innerHTML = ""
+    sideBarWrapper.appendChild(renderSidebar(boardValues, handlerNewGame))
+  }
+  function updateBoard() {
+    boardWrapper.innerHTML = ""
+    boardWrapper.appendChild(board(boardValues.cells))
+  }
+
 }
 
 start()
-
 
 // Инициализация доски
 export function initialCells(size: number) {
@@ -97,8 +109,8 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
   // d   =   {x || y} - i
   // i   =   {x || y} + i
   let lines: ILines = {
-    "vertical": {x: "i", y: "n", arr: []},
-    "horizontal": {x: "n", y: "i", arr: []},
+    "vertical": {x: "n", y: "i", arr: []},
+    "horizontal": {x: "i", y: "n", arr: []},
     "mainDiagonal": {x: "i", y: "i", arr: []},
     "secondaryDiagonal": {x: "i", y: "d", arr: []},
   }
@@ -116,7 +128,7 @@ export function checkValuesInLine(cells: string[][], winSeriesInGame: number, ce
     let x = (line.x === "n") ? cell.x : (line.x === "d") ? cell.x - i : cell.x + i
     let y = (line.y === "n") ? cell.y : (line.y === "d") ? cell.y - i : cell.y + i
     if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
-      res.push(cells[x][y])
+      res.push(cells[y][x])
     }
   }
   return res
@@ -129,4 +141,7 @@ export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, f
     if (tempCount === winSeriesInGame) return true
   }
   return false
+}
+export function saveToLocalStorage(key: string, value: string) {
+  localStorage.setItem(key, value)
 }
