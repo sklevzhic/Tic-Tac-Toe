@@ -134,7 +134,7 @@ describe("start", () => {
     expect(document.body.querySelectorAll(".cell__X").length).toBe(4)
     expect(document.body.querySelectorAll(".disable").length).toBe(7)
 
-    expect(screen.getByText("Победа X")).toBeInTheDocument()
+    expect(screen.getByText("Победа")).toBeInTheDocument()
   })
   it("should start new game after win", () => {
     let size = screen.getByLabelText("Размер сетки") as HTMLInputElement
@@ -177,7 +177,7 @@ describe("start", () => {
     expect(document.body.querySelectorAll(".cell__X").length).toBe(4)
     expect(document.body.querySelectorAll(".disable").length).toBe(7)
 
-    expect(screen.getByText("Победа X")).toBeInTheDocument()
+    expect(screen.getByText("Победа")).toBeInTheDocument()
     let buttonModal = screen.getAllByRole("button")[1]
     fireEvent.click(buttonModal)
 

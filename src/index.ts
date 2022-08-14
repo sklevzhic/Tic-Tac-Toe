@@ -1,9 +1,9 @@
 import "./style.css"
 import {ICell} from "./types/ICell";
-import {board, getCurrentFigure} from "./components/board";
+import {getCurrentFigure, renderBoard} from "./components/board";
 import {Figures} from "./types/figures";
 import {ILine, ILines} from "./types/ILine";
-import {getModalTemplate} from "./components/modal";
+import {renderModal} from "./components/modal";
 import {renderSidebar} from "./components/sidebar";
 import {IBoard} from "./types/IBoard";
 
@@ -17,21 +17,24 @@ export function start() {
     "newWinSeries": 3
   }
 
-  // Рендер элементов
+  // Рендер разметки
   let wrapper = <HTMLDivElement>document.createElement("div")
   wrapper.classList.add("wrapper")
 
+  // Создание сайтбара (настроек и информации)
+  let sideBarWrapper = <HTMLDivElement>document.createElement("div")
+  let sidebar = renderSidebar(boardValues, handlerNewGame)
+  sideBarWrapper.appendChild(sidebar)
+  // Создание доски
   let main = <HTMLDivElement>document.createElement("div")
   main.classList.add("main")
   let boardWrapper = <HTMLDivElement>document.createElement("div")
   boardWrapper.classList.add("board")
   boardWrapper.addEventListener("click", handlerCell)
-  boardWrapper.appendChild(board(boardValues.cells))
-
+  boardWrapper.appendChild(renderBoard(boardValues.cells))
   main.appendChild(boardWrapper)
-  let sideBarWrapper = <HTMLDivElement>document.createElement("div")
-  let sidebar = renderSidebar(boardValues, handlerNewGame)
-  sideBarWrapper.appendChild(sidebar)
+
+  // Добавление сайтбара и доски
   wrapper.appendChild(sideBarWrapper)
   wrapper.appendChild(main)
   document.body.appendChild(wrapper)
@@ -46,21 +49,19 @@ export function start() {
     }
   }
 
+
   //Старт новой игры
   function handlerNewGame(newSize: number = boardValues.size, newWinSeries: number = boardValues.winSeriesInGame) {
     let size = Number.isInteger(newSize) ? newSize : boardValues.size
-    let boardNew: IBoard = {
-      size: size,
-      winSeriesInGame: newWinSeries,
-      cells: initialCells(size),
-      step: 0,
-      newSize: size,
-      newWinSeries: newWinSeries
-    }
-    boardValues = boardNew
-
+    boardValues.size = size
+    boardValues.winSeriesInGame = newWinSeries
+    boardValues.cells = initialCells(size)
+    boardValues.step = 0
+    boardValues.newWinSeries = newWinSeries
+    boardValues.newSize = size
     updateBoard()
     updateSidebar()
+    localStorage.setItem("board", JSON.stringify(boardValues))
   }
 
   // Обработчик клика на ячейку
@@ -70,28 +71,35 @@ export function start() {
       let x = Number(eventTarget.getAttribute("data-x"));
       let y = Number(eventTarget.getAttribute("data-y"));
       let cell: ICell = {x, y}
-
       boardValues.cells[Number(y)][Number(x)] = currentFigure
       boardValues.step++
+      // 2 способа: 1 -  без перерисовок доски
+      eventTarget.textContent = currentFigure
+      eventTarget.classList.add(currentFigure === "X" ? "cell__X" : "cell__0")
+      eventTarget.classList.add("disable")
+      // 2 способа: 2 - перерисовка доски (менее производительно)
+      // updateBoard()
 
-      updateBoard()
       updateSidebar()
-      saveToLocalStorage("board", JSON.stringify(boardValues))
+      localStorage.setItem("board", JSON.stringify(boardValues))
 
-      if (checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, currentFigure)) {
-        let modalTemplate = getModalTemplate(currentFigure, handlerNewGame)
+      let resultGame = checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, boardValues.step - 1)
+      if (resultGame) {
+        let modalTemplate = renderModal(resultGame, handlerNewGame)
         boardWrapper.appendChild(modalTemplate)
-        localStorage.removeItem("board")
+        localStorage.setItem("board", JSON.stringify({...boardValues, cells: initialCells(boardValues.size), step: 0}))
       }
     }
   }
+
   function updateSidebar() {
     sideBarWrapper.innerHTML = ""
     sideBarWrapper.appendChild(renderSidebar(boardValues, handlerNewGame))
   }
+
   function updateBoard() {
     boardWrapper.innerHTML = ""
-    boardWrapper.appendChild(board(boardValues.cells))
+    boardWrapper.appendChild(renderBoard(boardValues.cells))
   }
 
 }
@@ -99,12 +107,12 @@ export function start() {
 start()
 
 // Инициализация доски
-export function initialCells(size: number) {
+export function initialCells(size: number): string[][] {
   return [...Array(size)].map(() => Array(size).fill(""))
 }
 
 // Проверка победы
-export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number, currentFigure: Figures) {
+export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number, step: number): string {
   // n   =   {x || y}
   // d   =   {x || y} - i
   // i   =   {x || y} + i
@@ -120,9 +128,17 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
   })
 
   // Содержит ли хотя бы одна линия победную комбинацию
-  return Object.keys(lines).some(key => checkWinSeriesInLine(lines[key].arr, winSeriesInGame, currentFigure))
+  if (Object.keys(lines).some(key => checkWinSeriesInLine(lines[key].arr, winSeriesInGame, getCurrentFigure(step)))) {
+    let figure = getCurrentFigure(step)
+
+    return `<p>Победа <span class="activeFigure">${figure}</span></p>`
+  }
+  if (step === cells.length * cells.length - 1) {
+    return "<p>Ничья</p>"
+  }
+  return  ""
 }
-export function checkValuesInLine(cells: string[][], winSeriesInGame: number, cell: ICell, line: ILine) {
+export function checkValuesInLine(cells: string[][], winSeriesInGame: number, cell: ICell, line: ILine): string[] {
   let res = []
   for (let i = -winSeriesInGame + 1; i < winSeriesInGame; i++) {
     let x = (line.x === "n") ? cell.x : (line.x === "d") ? cell.x - i : cell.x + i
@@ -141,7 +157,4 @@ export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, f
     if (tempCount === winSeriesInGame) return true
   }
   return false
-}
-export function saveToLocalStorage(key: string, value: string) {
-  localStorage.setItem(key, value)
 }

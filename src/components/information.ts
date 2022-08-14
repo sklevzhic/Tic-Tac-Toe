@@ -15,7 +15,7 @@ export const getInformationTemplate = (currentStep: number, winSeries: number, c
   series.classList.add("winSeries")
 
   step.textContent = "Счетчик ходов: " + currentStep
-  figure.textContent = "Текущий ход: " + currentFigure
+  figure.innerHTML = `Текущий ход: <span class="activeFigure">${currentFigure}</span>`
   series.textContent = "Победная серия: " + winSeries
 
   information.appendChild(title)

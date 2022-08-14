@@ -1,6 +1,6 @@
 import {Figures} from "../types/figures";
 
-export const board = (cells: string[][]) => {
+export const renderBoard = (cells: string[][]) => {
   return renderCells(cells)
 }
 // Рендер Ячеек
