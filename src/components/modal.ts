@@ -1,12 +1,10 @@
-import {Figures} from "../types/figures";
-
-export const getModalTemplate = (currentFigure: Figures, handleNewGame: () => void) => {
+export const renderModal = (text: string, handleNewGame: () => void) => {
   let overlay = document.createElement("div")
   overlay.classList.add("overlay")
   let content = document.createElement("div")
   content.classList.add("content")
   overlay.appendChild(content)
-  content.textContent = "Победа " + currentFigure
+  content.innerHTML = text
   let button = document.createElement("button")
   button.classList.add("button")
   button.textContent = "Начать новую игру"

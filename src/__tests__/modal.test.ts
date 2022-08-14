@@ -1,10 +1,9 @@
 import {screen} from "@testing-library/dom";
 import '@testing-library/jest-dom'
-import {getModalTemplate} from "../components/modal";
-import {getCurrentFigure} from "../components/board";
+import {renderModal} from "../components/modal";
 
 describe("test", () => {
-  let container = getModalTemplate(getCurrentFigure(23), jest.fn)
+  let container = renderModal("Победа 0", jest.fn)
   document.body.appendChild(container)
 
   it('should get the template modal', function () {

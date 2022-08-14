@@ -44,6 +44,7 @@
   line-height: 55px;
   text-align: center;
   height: 55px;
+  flex-shrink: 0;
   cursor: pointer;
   border: 1px solid #c9c9c9;
 }
@@ -89,7 +90,15 @@
   margin: 100px auto;
   padding: 20px;
   text-align: center;
+
   background: rgba(255, 255, 255, 0.63);
+}
+.activeFigure {
+  border: 1px solid gray;
+  padding: 5px;
+  font-size: 24px;
+  font-weight: 900;
+  background: antiquewhite;
 }
 
 .board {
@@ -102,3 +111,6 @@
   margin-top: 20px;
 }
 
+.input {
+  cursor: row-resize;
+}

@@ -9,7 +9,7 @@ describe("render information", () => {
     let template = getInformationTemplate(23, 5, getCurrentFigure(23))
     document.body.appendChild(template)
     expect(screen.getByText("Счетчик ходов: 23")).toBeInTheDocument()
-    expect(screen.getByText("Текущий ход: 0")).toBeInTheDocument()
+    expect(screen.getByText("Текущий ход:")).toBeInTheDocument()
     expect(screen.getByText("Победная серия: 5")).toBeInTheDocument()
   });
 })

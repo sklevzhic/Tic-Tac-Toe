@@ -12,6 +12,25 @@ export let cellsMock: string[][] = [
   ["", "", "", "", "", "", "", ""],
   ["", "", "", "", "", "", "", ""]
 ]
+
+let cellsDrawMock: string[][] = [
+  [
+    "0",
+    "X",
+    "0"
+  ],
+  [
+    "X",
+    "X",
+    "0"
+  ],
+  [
+    "X",
+    "0",
+    "X"
+  ]
+]
+
 //  0 1 2 3 4 5 6 7 = x
 //0 * * * * * * * *
 //1 * 0 X 0 * * * *
@@ -21,8 +40,6 @@ export let cellsMock: string[][] = [
 //5 * * X X * * * *
 //6 * * * * * * * *
 //7 * * * * * * * *
-//=
-//y
 
 
 let lines: ILines = {
@@ -106,17 +123,28 @@ describe("Should get values values from the line", () => {
   })
   describe("should check win", () => {
     test("win", () => {
-      expect(checkWin(cellsMock, {"x": 4, "y": 3}, 3, Figures.FIGUREX)).toBeTruthy()
-      expect(checkWin(cellsMock, {"x": 3, "y": 2}, 3, Figures.FIGUREX)).toBeTruthy()
-      expect(checkWin(cellsMock, {"x": 1, "y": 2}, 3, Figures.FIGUREX)).toBeTruthy()
-      expect(checkWin(cellsMock, {"x": 4, "y": 2}, 3, Figures.FIGURE0)).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 4, "y": 3}, 3, 12).includes("Победа")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 4, "y": 3}, 3, 12).includes("X")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 3, "y": 2}, 3, 12).includes("Победа")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 3, "y": 2}, 3, 12).includes("X")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 1, "y": 2}, 3, 12).includes("Победа")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 1, "y": 2}, 3, 12).includes("X")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 4, "y": 2}, 3, 11).includes("Победа")).toBeTruthy()
+      expect(checkWin(cellsMock, {"x": 4, "y": 2}, 3, 11).includes("0")).toBeTruthy()
 
     })
     test("lose", () => {
-      expect(checkWin(cellsMock, {"x": 4, "y": 0}, 4, Figures.FIGUREX)).toBeFalsy()
-      expect(checkWin(cellsMock, {"x": 1, "y": 1}, 4, Figures.FIGUREX)).toBeFalsy()
-      expect(checkWin(cellsMock, {"x": 1, "y": 2}, 4, Figures.FIGUREX)).toBeFalsy()
-      expect(checkWin(cellsMock, {"x": 3, "y": 5}, 4, Figures.FIGUREX)).toBeFalsy()
+      expect(checkWin(cellsMock, {"x": 4, "y": 0}, 5, 12)).toBeFalsy()
+      expect(checkWin(cellsMock, {"x": 1, "y": 1}, 5, 12)).toBeFalsy()
+      expect(checkWin(cellsMock, {"x": 1, "y": 2}, 5, 12)).toBeFalsy()
+      expect(checkWin(cellsMock, {"x": 3, "y": 5}, 5, 12)).toBeFalsy()
+    })
+
+    test("draw", () => {
+      expect(checkWin(cellsDrawMock, {"x": 0, "y": 1}, 3, 12).includes("Ничья")).toBeFalsy()
+      expect(checkWin(cellsDrawMock, {"x": 1, "y": 1}, 3, 12).includes("Ничья")).toBeFalsy()
+      expect(checkWin(cellsDrawMock, {"x": 1, "y": 2}, 3, 12).includes("Ничья")).toBeFalsy()
+      expect(checkWin(cellsDrawMock, {"x": 2, "y": 1}, 3, 12).includes("Ничья")).toBeFalsy()
     })
   })
 
