@@ -1,27 +1,16 @@
-import {Figures} from "../types/figures";
+import {IBoard} from "../types/IBoard";
+import {getCurrentFigure} from "./board";
 
-export const getInformationTemplate = (currentStep: number, winSeries: number, currentFigure: Figures) => {
+export const renderInformation = (boardValues: IBoard) => {
 
   let information = document.createElement("div")
   information.classList.add("information")
-  let title = document.createElement("h5")
-  title.classList.add("title")
-  title.textContent = "Информация"
-  let step = document.createElement("p")
-  let figure = document.createElement("p")
-  let series = document.createElement("p")
-  step.classList.add("step")
-  figure.classList.add("currentFigure")
-  series.classList.add("winSeries")
-
-  step.textContent = "Счетчик ходов: " + currentStep
-  figure.innerHTML = `Текущий ход: <span class="activeFigure">${currentFigure}</span>`
-  series.textContent = "Победная серия: " + winSeries
-
-  information.appendChild(title)
-  information.appendChild(step)
-  information.appendChild(figure)
-  information.appendChild(series)
-
+  information.innerHTML = `
+    <h5 class="title">Информация</h5>
+    <p class="step">Счетчик ходов: ${boardValues.step}</p>
+    <p class="currentFigure">Текущий ход: <span class="activeFigure">${getCurrentFigure(boardValues.step)}</span></p>
+    <p class="winSeries">Победная серия: ${boardValues.winSeriesInGame}</p>
+    <p>${boardValues.users[0].name} [${boardValues.users[0].win} : ${boardValues.users[1].win}] ${boardValues.users[1].name}</p>
+  `
   return information
 }
