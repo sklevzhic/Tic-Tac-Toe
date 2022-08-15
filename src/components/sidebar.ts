@@ -4,7 +4,7 @@ import {getCurrentFigure} from "./board";
 import {IBoard} from "../types/IBoard";
 
 
-export const renderSidebar = (boardValues: IBoard, handlerNewGame: () => void) => {
+export const renderSidebar = (boardValues: IBoard, handlerNewGame: () => void, resetUsersInformation: () => void) => {
   let sidebar = document.createElement("div")
   sidebar.classList.add("sidebar")
 
@@ -12,7 +12,7 @@ export const renderSidebar = (boardValues: IBoard, handlerNewGame: () => void) =
   let informationWrapper = <HTMLDivElement>document.createElement("div")
   informationWrapper.classList.add("informationWrapper")
   informationWrapper.innerHTML = ""
-  informationWrapper.appendChild(renderInformation(boardValues))
+  informationWrapper.appendChild(renderInformation(boardValues, resetUsersInformation))
 
   let settingsWrapper = <HTMLDivElement>document.createElement("div")
   settingsWrapper.classList.add("settingsWrapper")

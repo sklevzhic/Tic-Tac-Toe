@@ -118,7 +118,7 @@ let boardValues: IBoard = {
   ]
 }
 describe("sidebar", () => {
-  let container1 = renderSidebar(boardValues, jest.fn)
+  let container1 = renderSidebar(boardValues, jest.fn, jest.fn)
   document.body.innerHTML = ""
   document.body.appendChild(container1)
   it("should renders settings and information", () => {

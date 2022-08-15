@@ -29,7 +29,7 @@ export function start() {
 
   // Создание сайтбара (настроек и информации)
   let sideBarWrapper = <HTMLDivElement>document.createElement("div")
-  let sidebar = renderSidebar(boardValues, handlerNewGame)
+  let sidebar = renderSidebar(boardValues, handlerNewGame, resetUsersInformation)
   sideBarWrapper.appendChild(sidebar)
   // Создание доски
   let main = <HTMLDivElement>document.createElement("div")
@@ -106,9 +106,19 @@ export function start() {
     }
   }
 
+  function resetUsersInformation () {
+    boardValues.users.forEach(el => {
+      el.win = 0
+    })
+    console.log(boardValues)
+    updateSidebar()
+  }
+
+
+
   function updateSidebar() {
     sideBarWrapper.innerHTML = ""
-    sideBarWrapper.appendChild(renderSidebar(boardValues, handlerNewGame))
+    sideBarWrapper.appendChild(renderSidebar(boardValues, handlerNewGame, resetUsersInformation))
   }
 
   function updateBoard() {

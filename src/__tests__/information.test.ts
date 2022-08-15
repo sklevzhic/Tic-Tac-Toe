@@ -121,7 +121,7 @@ let boardValues: IBoard = {
 
 describe("render information", () => {
   it('should get the template information', function () {
-    let template = renderInformation(boardValues)
+    let template = renderInformation(boardValues, jest.fn)
     document.body.appendChild(template)
     expect(screen.getByText("Счетчик ходов: 15")).toBeInTheDocument()
     expect(screen.getByText("Победная серия: 7")).toBeInTheDocument()
