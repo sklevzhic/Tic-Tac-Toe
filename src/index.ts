@@ -9,12 +9,18 @@ import {IBoard} from "./types/IBoard";
 
 export function start() {
   let boardValues: IBoard = {
+    "isStart": true,
+    "isFinish": false,
     "size": 3,
     "winSeriesInGame": 3,
     "step": 0,
     "cells": initialCells(3),
     "newSize": 3,
-    "newWinSeries": 3
+    "newWinSeries": 3,
+    "users": [
+      {name: "Player X", win: 0},
+      {name: "Player 0", win: 0}
+    ]
   }
 
   // Рендер разметки
@@ -81,11 +87,19 @@ export function start() {
       // updateBoard()
 
       updateSidebar()
+
       localStorage.setItem("board", JSON.stringify(boardValues))
 
       let resultGame = checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, boardValues.step - 1)
       if (resultGame) {
         let modalTemplate = renderModal(resultGame, handlerNewGame)
+        if (resultGame.includes("Победа")) {
+          boardValues.users.map(user => {
+            if (user.name.includes(currentFigure)) {
+              return user.win += 1
+            }
+          })
+        }
         boardWrapper.appendChild(modalTemplate)
         localStorage.setItem("board", JSON.stringify({...boardValues, cells: initialCells(boardValues.size), step: 0}))
       }
@@ -136,8 +150,9 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
   if (step === cells.length * cells.length - 1) {
     return "<p>Ничья</p>"
   }
-  return  ""
+  return ""
 }
+
 export function checkValuesInLine(cells: string[][], winSeriesInGame: number, cell: ICell, line: ILine): string[] {
   let res = []
   for (let i = -winSeriesInGame + 1; i < winSeriesInGame; i++) {
@@ -149,6 +164,7 @@ export function checkValuesInLine(cells: string[][], winSeriesInGame: number, ce
   }
   return res
 }
+
 export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, figure: Figures | ""): boolean {
   let count = 0
   for (let i = 0; i <= array.length - 1; i++) {
