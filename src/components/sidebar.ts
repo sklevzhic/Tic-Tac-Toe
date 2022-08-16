@@ -1,6 +1,5 @@
 import {renderSettingsNewGame} from "./settings";
 import {renderInformation} from "./information";
-import {getCurrentFigure} from "./board";
 import {IBoard} from "../types/IBoard";
 
 
@@ -24,3 +23,4 @@ export const renderSidebar = (boardValues: IBoard, handlerNewGame: () => void, r
 
   return sidebar
 }
+

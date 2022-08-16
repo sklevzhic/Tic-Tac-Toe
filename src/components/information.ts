@@ -1,8 +1,7 @@
 import {IBoard} from "../types/IBoard";
-import {getCurrentFigure} from "./board";
+import { getIndexCurrentUser } from "./board";
 
 export const renderInformation = (boardValues: IBoard, resetUsersInformation: () => void) => {
-
   let information = document.createElement("div")
   information.classList.add("information")
 
@@ -16,7 +15,7 @@ export const renderInformation = (boardValues: IBoard, resetUsersInformation: ()
 
   let currentFigure = document.createElement("p")
   currentFigure.classList.add("currentFigure")
-  currentFigure.innerHTML = `Текущий ход: <span class="activeFigure">${getCurrentFigure(boardValues.step)}</span>`
+  currentFigure.innerHTML = `Текущий ход: <span class="activeFigure">${boardValues.users[getIndexCurrentUser(boardValues.step)].figure}</span>`
 
   let winSeries = document.createElement("p")
   winSeries.classList.add("step")

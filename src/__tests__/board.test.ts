@@ -1,6 +1,6 @@
 import {renderCell, renderCells} from "../components/board";
 
-describe("test", () => {
+describe("board", () => {
 
   it('should get cells template', function () {
     let wrapper = renderCells([["","",""],["","",""],["","",""]])

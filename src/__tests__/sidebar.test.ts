@@ -5,7 +5,6 @@ import {IBoard} from "../types/IBoard";
 import {Figures} from "../types/figures";
 
 let boardValues: IBoard = {
-  "isStart": true,
   "size": 9,
   "winSeriesInGame": 7,
   "step": 15,

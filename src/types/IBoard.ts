@@ -1,7 +1,6 @@
 import {Figures} from "./figures";
 
 export interface IBoard {
-  isStart: boolean,
   size: number,
   winSeriesInGame: number,
   step: number,

@@ -1,6 +1,6 @@
 import "./style.css"
 import {ICell} from "./types/ICell";
-import {getCurrentFigure, renderBoard} from "./components/board";
+import {getIndexCurrentUser, renderBoard} from "./components/board";
 import {Figures} from "./types/figures";
 import {ILine, ILines} from "./types/ILine";
 import {renderModal} from "./components/modal";
@@ -9,7 +9,6 @@ import {IBoard} from "./types/IBoard";
 
 export function start() {
   let boardValues: IBoard = {
-    "isStart": true,
     "size": 3,
     "winSeriesInGame": 3,
     "step": 0,
@@ -72,7 +71,7 @@ export function start() {
   // Обработчик клика на ячейку
   function handlerCell(event: MouseEvent) {
     // Получаем фигуру пользователя
-    let currentFigure:Figures = boardValues.users[getIndexCurrentUser(boardValues.step)].figure
+    let currentFigure: Figures = boardValues.users[getIndexCurrentUser(boardValues.step)].figure
 
     let eventTarget = event.target as HTMLDivElement
     if (eventTarget.classList.contains("cell") && !(eventTarget.classList.contains("disable"))) {
@@ -81,7 +80,7 @@ export function start() {
       let cell: ICell = {x, y}
       boardValues.cells[Number(y)][Number(x)] = currentFigure
       boardValues.step++
-      // 2 способа: 1 -  без перерисовок доски
+      // 2 способа: 1 -  без перерисовки доски
       eventTarget.textContent = currentFigure
       eventTarget.classList.add(currentFigure === "X" ? "cell__X" : "cell__0")
       eventTarget.classList.add("disable")
@@ -108,20 +107,17 @@ export function start() {
     }
   }
 
-  function resetUsersInformation () {
+  function resetUsersInformation() {
     boardValues.users.forEach(el => {
       el.win = 0
     })
     updateSidebar()
   }
 
-
-
   function updateSidebar() {
     sideBarWrapper.innerHTML = ""
     sideBarWrapper.appendChild(renderSidebar(boardValues, handlerNewGame, resetUsersInformation))
   }
-
   function updateBoard() {
     boardWrapper.innerHTML = ""
     boardWrapper.appendChild(renderBoard(boardValues.cells))
@@ -164,13 +160,30 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
 
 export function checkValuesInLine(cells: string[][], winSeriesInGame: number, cell: ICell, line: ILine): string[] {
   let res = []
-  for (let i = -winSeriesInGame + 1; i < winSeriesInGame; i++) {
-    let x = (line.x === "n") ? cell.x : (line.x === "d") ? cell.x - i : cell.x + i
-    let y = (line.y === "n") ? cell.y : (line.y === "d") ? cell.y - i : cell.y + i
-    if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
-      res.push(cells[y][x])
+  //Проверяем соседние ячейки. Если они содержат похожее значение то проверяем всю линию
+  let beforeCellX = getDynamicValue("x", cell.x, line, -1)
+  let beforeCellY = getDynamicValue("y", cell.y, line, -1)
+  let afterCellX = getDynamicValue("x", cell.x, line, 1)
+  let afterCellY = getDynamicValue("y", cell.y, line, 1)
+  let beforeCellValue = cells[beforeCellY] ? cells[beforeCellY][beforeCellX] : undefined
+  let currentValue = cells[cell.y][cell.x]
+  let afterCellValue = cells[afterCellY] ? cells[afterCellY][afterCellX] : undefined
+
+  if ((beforeCellValue === currentValue) || (currentValue === afterCellValue)) {
+    for (let i = -winSeriesInGame + 1; i < winSeriesInGame; i++) {
+      let x = getDynamicValue("x", cell.x, line, i)
+      let y = getDynamicValue("y", cell.y, line, i)
+      if (x >= 0 && y >= 0 && x < cells.length && y < cells.length) {
+        res.push(cells[y][x])
+      }
     }
   }
+
+
+  function getDynamicValue(axis: "x" | "y", currentValue: number, line: ILine, i: number): number {
+    return (line[axis] === "n") ? currentValue : (line[axis] === "d") ? currentValue - i : currentValue + i
+  }
+
   return res
 }
 
@@ -183,59 +196,3 @@ export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, f
   }
   return false
 }
-
-function getIndexCurrentUser(step: number): number {
-  return step % 2
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
