@@ -3,10 +3,10 @@ import '@testing-library/jest-dom'
 import {initialCells} from "../index";
 import {IBoard} from "../types/IBoard";
 import {renderInformation} from "../components/information";
+import {Figures} from "../types/figures";
 
 let boardValues: IBoard = {
   "isStart": true,
-  "isFinish": false,
   "size": 9,
   "winSeriesInGame": 7,
   "step": 15,
@@ -108,14 +108,8 @@ let boardValues: IBoard = {
   "newSize": 9,
   "newWinSeries": 7,
   "users": [
-    {
-      "name": "Player X",
-      "win": 2
-    },
-    {
-      "name": "Player 0",
-      "win": 0
-    }
+    {name: "Player X", win: 2, figure: Figures.FIGUREX},
+    {name: "Player 0", win: 0, figure: Figures.FIGURE0}
   ]
 }
 

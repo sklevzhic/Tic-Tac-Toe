@@ -10,7 +10,6 @@ import {IBoard} from "./types/IBoard";
 export function start() {
   let boardValues: IBoard = {
     "isStart": true,
-    "isFinish": false,
     "size": 3,
     "winSeriesInGame": 3,
     "step": 0,
@@ -18,8 +17,8 @@ export function start() {
     "newSize": 3,
     "newWinSeries": 3,
     "users": [
-      {name: "Player X", win: 0},
-      {name: "Player 0", win: 0}
+      {name: "Player X", win: 0, figure: Figures.FIGUREX},
+      {name: "Player 0", win: 0, figure: Figures.FIGURE0}
     ]
   }
 
@@ -71,7 +70,10 @@ export function start() {
   }
 
   // Обработчик клика на ячейку
-  function handlerCell(event: MouseEvent, currentFigure: Figures = getCurrentFigure(boardValues.step)) {
+  function handlerCell(event: MouseEvent) {
+    // Получаем фигуру пользователя
+    let currentFigure:Figures = boardValues.users[getIndexCurrentUser(boardValues.step)].figure
+
     let eventTarget = event.target as HTMLDivElement
     if (eventTarget.classList.contains("cell") && !(eventTarget.classList.contains("disable"))) {
       let x = Number(eventTarget.getAttribute("data-x"));
@@ -90,7 +92,7 @@ export function start() {
 
       localStorage.setItem("board", JSON.stringify(boardValues))
 
-      let resultGame = checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, boardValues.step - 1)
+      let resultGame = checkWin(boardValues.cells, cell, boardValues.winSeriesInGame, boardValues.step - 1, currentFigure)
       if (resultGame) {
         let modalTemplate = renderModal(resultGame, handlerNewGame)
         if (resultGame.includes("Победа")) {
@@ -110,7 +112,6 @@ export function start() {
     boardValues.users.forEach(el => {
       el.win = 0
     })
-    console.log(boardValues)
     updateSidebar()
   }
 
@@ -136,7 +137,7 @@ export function initialCells(size: number): string[][] {
 }
 
 // Проверка победы
-export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number, step: number): string {
+export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number, step: number, figure: Figures): string {
   // n   =   {x || y}
   // d   =   {x || y} - i
   // i   =   {x || y} + i
@@ -152,9 +153,7 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
   })
 
   // Содержит ли хотя бы одна линия победную комбинацию
-  if (Object.keys(lines).some(key => checkWinSeriesInLine(lines[key].arr, winSeriesInGame, getCurrentFigure(step)))) {
-    let figure = getCurrentFigure(step)
-
+  if (Object.keys(lines).some(key => checkWinSeriesInLine(lines[key].arr, winSeriesInGame, figure))) {
     return `<p>Победа <span class="activeFigure">${figure}</span></p>`
   }
   if (step === cells.length * cells.length - 1) {
@@ -175,7 +174,7 @@ export function checkValuesInLine(cells: string[][], winSeriesInGame: number, ce
   return res
 }
 
-export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, figure: Figures | ""): boolean {
+export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, figure: Figures): boolean {
   let count = 0
   for (let i = 0; i <= array.length - 1; i++) {
     let tempCount = array[i] === figure ? count + 1 : 0
@@ -184,3 +183,59 @@ export function checkWinSeriesInLine(array: string[], winSeriesInGame: number, f
   }
   return false
 }
+
+function getIndexCurrentUser(step: number): number {
+  return step % 2
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

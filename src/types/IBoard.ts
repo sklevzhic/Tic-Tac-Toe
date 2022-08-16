@@ -2,7 +2,6 @@ import {Figures} from "./figures";
 
 export interface IBoard {
   isStart: boolean,
-  isFinish: boolean,
   size: number,
   winSeriesInGame: number,
   step: number,
@@ -11,6 +10,7 @@ export interface IBoard {
   newWinSeries: number
   users: {
     name: string,
-    win: number
+    win: number,
+    figure: Figures
   }[]
 }
