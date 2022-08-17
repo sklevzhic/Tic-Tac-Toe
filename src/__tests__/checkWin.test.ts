@@ -3,14 +3,105 @@ import {ILines} from "../types/ILine";
 import {Figures} from "../types/figures";
 
 export let cellsMock: string[][] = [
-  ["", "", "", "", "", "", "", ""],
-  ["", "0", "X", "0", "", "", "", ""],
-  ["", "X", "", "X", "0", "", "", ""],
-  ["0", "X", "", "X", "X", "0", "", ""],
-  ["0", "X", "", "0", "0", "", "", ""],
-  ["", "", "X", "X", "", "", "", ""],
-  ["", "", "", "", "", "", "", ""],
-  ["", "", "", "", "", "", "", ""]
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "0",
+    "X",
+    "0",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "X",
+    "",
+    "X",
+    "0",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "0",
+    "X",
+    "",
+    "X",
+    "X",
+    "0",
+    "",
+    "",
+    ""
+  ],
+  [
+    "0",
+    "X",
+    "",
+    "0",
+    "0",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "X",
+    "X",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
 ]
 
 let cellsDrawMock: string[][] = [
@@ -52,50 +143,42 @@ let lines: ILines = {
 describe("Should get values values from the line", () => {
   describe("should get values from lines", () => {
     test("should get values from the vertical", () => {
-      // console.log(checkValuesInLine(cellsMock, 4, {"x": 2, "y": 2}, lines["vertical"]))
-      expect(checkValuesInLine(cellsMock, 4, {"x": 2, "y": 2}, lines["vertical"]))
-        .toEqual(["", "X", "", "", "", "X"])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 7}, lines["vertical"]))
-        .toEqual(["", "", "", ""])
       expect(checkValuesInLine(cellsMock, 4, {"x": 3, "y": 3}, lines["vertical"]))
         .toEqual(["", "0", "X", "X", "0", "X", ""])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 3, "y": 3}, lines["vertical"]))
+        .toEqual(["0", "X", "X", "0", "X"])
+      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 3}, lines["vertical"]))
+        .toEqual(["","","","0","0","",""])
     })
     test("should get values from the horizontal", () => {
       expect(checkValuesInLine(cellsMock, 4, {"x": 4, "y": 4}, lines["horizontal"]))
-        .toEqual(["X", "", "0", "0", "", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 0}, lines["horizontal"]))
-        .toEqual(["", "", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 3}, lines["horizontal"]))
-        .toEqual(["0", "X", "", "X"])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 3}, lines["horizontal"]))
-        .toEqual(["X", "0", "", ""])
+        .toEqual(["X","","0","0","","",""])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 2, "y": 2}, lines["horizontal"]))
+        .toEqual([])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 3, "y": 2}, lines["horizontal"]))
+        .toEqual([])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 4, "y": 3}, lines["horizontal"]))
+        .toEqual(["", "X", "X", "0", ""])
     })
     test("should get values from the main diagonal", () => {
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 3}, lines["mainDiagonal"]))
-        .toEqual(["", "", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 0}, lines["mainDiagonal"]))
-        .toEqual([""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 7}, lines["mainDiagonal"]))
-        .toEqual([""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 4, "y": 4}, lines["mainDiagonal"]))
-        .toEqual(["0", "", "X", "0", "", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 0}, lines["mainDiagonal"]))
-        .toEqual(["", "0", "", "X"])
-
+      expect(checkValuesInLine(cellsMock, 3, {"x": 2, "y": 1}, lines["mainDiagonal"]))
+        .toEqual(["","X","X","X"])
+      expect(checkValuesInLine(cellsMock, 4, {"x": 2, "y": 1}, lines["mainDiagonal"]))
+        .toEqual(["","X","X","X",""])
+      expect(checkValuesInLine(cellsMock, 5, {"x": 2, "y": 1}, lines["mainDiagonal"]))
+        .toEqual(["","X","X","X","",""])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 1, "y": 3}, lines["mainDiagonal"]))
+        .toEqual([])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 2, "y": 5}, lines["mainDiagonal"]))
+        .toEqual(["0","X","X","",""])
     })
     test("should get values from the secondary diagonal", () => {
       expect(checkValuesInLine(cellsMock, 4, {"x": 4, "y": 4}, lines["secondaryDiagonal"]))
         .toEqual(["", "", "X", "0", "0", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 0, "y": 0}, lines["secondaryDiagonal"]))
-        .toEqual([""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 7}, lines["secondaryDiagonal"]))
-        .toEqual([""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 7, "y": 0}, lines["secondaryDiagonal"]))
-        .toEqual(["X", "", "", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 1, "y": 1}, lines["secondaryDiagonal"]))
-        .toEqual(["", "0", ""])
-      expect(checkValuesInLine(cellsMock, 4, {"x": 5, "y": 3}, lines["secondaryDiagonal"]))
-        .toEqual(["", "X", "0", "0", "", ""])
+      expect(checkValuesInLine(cellsMock, 4, {"x": 1, "y": 2}, lines["secondaryDiagonal"]))
+        .toEqual(["0", "X", "X", ""])
+      expect(checkValuesInLine(cellsMock, 3, {"x": 1, "y": 2}, lines["secondaryDiagonal"]))
+        .toEqual(["0", "X", "X", ""])
     })
   })
   describe("should check elements of the line on availability win series", () => {

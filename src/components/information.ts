@@ -23,19 +23,15 @@ export const renderInformation = (boardValues: IBoard, resetUsersInformation: ()
 
   let countWin = document.createElement("p")
   countWin.classList.add("countWin")
-  countWin.textContent = `${boardValues.users[0].name} [${boardValues.users[0].win} : ${boardValues.users[1].win}] ${boardValues.users[1].name}`
+  countWin.textContent = `${boardValues.users[0].name} ${boardValues.users[0].figure} [${boardValues.users[0].win} : ${boardValues.users[1].win}] ${boardValues.users[1].name}  ${boardValues.users[1].figure}`
 
 
-  let button = document.createElement("button")
-  button.textContent = "Сбросить счет"
-  button.addEventListener("click", resetUsersInformation)
 
   information.appendChild(title)
   information.appendChild(step)
   information.appendChild(currentFigure)
   information.appendChild(winSeries)
   information.appendChild(countWin)
-  information.appendChild(button)
 
   return information
 }
