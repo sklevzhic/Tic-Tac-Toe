@@ -1,6 +1,6 @@
-import {fireEvent, getByText, screen} from "@testing-library/dom";
+import {fireEvent, screen} from "@testing-library/dom";
 import '@testing-library/jest-dom'
-import {initialCells, start} from "../index";
+import {start} from "../index";
 
 describe("start", () => {
   document.body.innerHTML = ""
@@ -182,6 +182,6 @@ describe("start", () => {
     fireEvent.click(buttonModal)
 
     expect(screen.getByText(/Счетчик ходов: 0/)).toBeInTheDocument()
-    expect(screen.getByText("Player X [2 : 0] Player 0")).toBeInTheDocument()
+    expect(screen.getByText("Player X [1 : 0] Player 0")).toBeInTheDocument()
   })
 })

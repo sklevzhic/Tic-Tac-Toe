@@ -6,116 +6,21 @@ import {renderInformation} from "../components/information";
 import {Figures} from "../types/figures";
 
 let boardValues: IBoard = {
-  "isStart": true,
-  "size": 9,
+  "size": 3,
   "winSeriesInGame": 7,
   "step": 15,
-  "cells": [
-    [
-      "", "", "X", "0", "", "", "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      "X",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "X",
-      "0",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ],
-    [
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
-  ],
-  "newSize": 9,
-  "newWinSeries": 7,
+  "cells": initialCells(3),
+  "newSize": 3,
+  "newWinSeries": 3,
   "users": [
-    {name: "Player X", win: 2, figure: Figures.FIGUREX},
-    {name: "Player 0", win: 0, figure: Figures.FIGURE0}
+    {name: "Player", win: 2, figure: Figures.FIGUREX},
+    {name: "Player", win: 0, figure: Figures.FIGURE0},
   ]
 }
 
 describe("render information", () => {
   it('should get the template information', function () {
-    let template = renderInformation(boardValues, jest.fn)
+    let template = renderInformation(boardValues)
     document.body.appendChild(template)
     expect(screen.getByText("Счетчик ходов: 15")).toBeInTheDocument()
     expect(screen.getByText("Победная серия: 7")).toBeInTheDocument()

@@ -38,8 +38,6 @@ export function renderCell(x: number, y: number, value: string) {
   return cell
 }
 
-// Получение текущего хода
-export function getCurrentFigure(step: number): Figures {
-  return step % 2 ? Figures.FIGURE0 : Figures.FIGUREX
+export function getIndexCurrentUser(step: number): number {
+  return step % 2
 }
-
