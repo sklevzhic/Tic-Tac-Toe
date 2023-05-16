@@ -1,10 +1,11 @@
+import type { ActionsForCoordinate } from "./actionsForCoordinate";
 
 export interface ILines {
-  [key: string]: ILine
+    [key: string]: ILine;
 }
 
 export interface ILine {
-  x: string,
-  y: string,
-  arr: string[]
+    x: ActionsForCoordinate;
+    y: ActionsForCoordinate;
+    arr: string[];
 }

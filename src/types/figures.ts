@@ -1,5 +1,5 @@
 export enum Figures {
-  FIGUREX = "X",
-  FIGURE0 = "0"
+    FIGUREX = "X",
+    FIGURE0 = "0",
 }
 

@@ -1,37 +1,41 @@
-import {IBoard} from "../types/IBoard";
+import type { IBoard } from "../types/IBoard";
 import { getIndexCurrentUser } from "./board";
 
 export const renderInformation = (boardValues: IBoard) => {
-  let information = document.createElement("div")
-  information.classList.add("information")
+    const information = document.createElement("div");
 
-  let title = document.createElement("h5")
-  title.classList.add("title")
-  title.textContent = "Информация"
+    information.classList.add("information");
 
-  let step = document.createElement("p")
-  step.classList.add("step")
-  step.textContent = "Счетчик ходов: " + boardValues.step
+    const title = document.createElement("h5");
 
-  let currentFigure = document.createElement("p")
-  currentFigure.classList.add("currentFigure")
-  currentFigure.innerHTML = `Текущий ход: <span class="activeFigure">${boardValues.users[getIndexCurrentUser(boardValues.step)].figure}</span>`
+    title.classList.add("title");
+    title.textContent = "Информация";
 
-  let winSeries = document.createElement("p")
-  winSeries.classList.add("step")
-  winSeries.textContent = "Победная серия: " + boardValues.winSeriesInGame
+    const step = document.createElement("p");
 
-  let countWin = document.createElement("p")
-  countWin.classList.add("countWin")
-  countWin.textContent = `${boardValues.users[0].name} ${boardValues.users[0].figure} [${boardValues.users[0].win} : ${boardValues.users[1].win}] ${boardValues.users[1].name}  ${boardValues.users[1].figure}`
+    step.classList.add("step");
+    step.textContent = `Счетчик ходов: ${  boardValues.step}`;
 
+    const currentFigure = document.createElement("p");
 
+    currentFigure.classList.add("currentFigure");
+    currentFigure.innerHTML = `Текущий ход: <span class="activeFigure">${boardValues.users[getIndexCurrentUser(boardValues.step)].figure}</span>`;
 
-  information.appendChild(title)
-  information.appendChild(step)
-  information.appendChild(currentFigure)
-  information.appendChild(winSeries)
-  information.appendChild(countWin)
+    const winSeries = document.createElement("p");
 
-  return information
-}
+    winSeries.classList.add("step");
+    winSeries.textContent = `Победная серия: ${  boardValues.winSeriesInGame}`;
+
+    const countWin = document.createElement("p");
+
+    countWin.classList.add("countWin");
+    countWin.textContent = `${boardValues.users[0].name} ${boardValues.users[0].figure} [${boardValues.users[0].win} : ${boardValues.users[1].win}] ${boardValues.users[1].name}  ${boardValues.users[1].figure}`;
+
+    information.append(title);
+    information.append(step);
+    information.append(currentFigure);
+    information.append(winSeries);
+    information.append(countWin);
+
+    return information;
+};
