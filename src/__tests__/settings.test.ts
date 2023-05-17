@@ -3,7 +3,9 @@ import { screen } from "@testing-library/dom";
 import '@testing-library/jest-dom';
 
 describe("template settings", () => {
-    const container = renderSettingsNewGame(7, 5, jest.fn);
+    const NEW_SIZE = 7;
+    const NEW_WIN_SERIES = 5;
+    const container = renderSettingsNewGame(NEW_SIZE, NEW_WIN_SERIES, jest.fn);
 
     document.body.append(container);
     it('should render the template settings', function() {
@@ -11,7 +13,10 @@ describe("template settings", () => {
         expect(screen.getByText(/размер сетки/i)).toBeVisible();
         expect(screen.getByText(/победная серия/i)).toBeVisible();
         expect(screen.getByText("Начать")).toBeVisible();
-        expect(screen.getAllByRole("spinbutton").length).toBe(2);
+
+        const  SPIN_BUTTONS_LENGTH = 2;
+
+        expect(screen.getAllByRole("spinbutton").length).toBe(SPIN_BUTTONS_LENGTH);
     });
 
     it("should get default values in template", () => {

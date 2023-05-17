@@ -4,14 +4,16 @@ import { initialCells } from "../index";
 import type { IBoard } from "../types/IBoard";
 import { renderInformation } from "../components/information";
 import { Figures } from "../types/figures";
+import { DEFAULT_NEW_SIZE, DEFAULT_NEW_WIN_SERIES_IN_GAME, DEFAULT_SIZE } from "../consts/boardConfig";
+import { STEP, WIN_SERIES_IN_GAME } from "./consts";
 
 const boardValues: IBoard = {
     "size": 3,
-    "winSeriesInGame": 7,
-    "step": 15,
-    "cells": initialCells(3),
-    "newSize": 3,
-    "newWinSeries": 3,
+    "winSeriesInGame": WIN_SERIES_IN_GAME[7],
+    "step": STEP[15],
+    "cells": initialCells(DEFAULT_SIZE),
+    "newSize": DEFAULT_NEW_SIZE,
+    "newWinSeries": DEFAULT_NEW_WIN_SERIES_IN_GAME,
     "users": [
         { name: "Player", win: 2, figure: Figures.FIGUREX },
         { name: "Player", win: 0, figure: Figures.FIGURE0 },

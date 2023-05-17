@@ -48,5 +48,7 @@ export function renderCell(x: number, y: number, value: string) {
 }
 
 export function getIndexCurrentUser(step: number): number {
-    return step % 2;
+    const DIVIDER_TWO = 2;
+
+    return step % DIVIDER_TWO;
 }

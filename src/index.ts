@@ -195,10 +195,10 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
 
   // Содержит ли хотя бы одна линия победную комбинацию
     if (Object.keys(lines).some(key => checkWinSeriesInLine(lines[key].arr, winSeriesInGame, figure))) {
-        return `<p>Победа <span class="activeFigure">${figure}</span></p>`; //  TODO
+        return `<p>Победа <span class="activeFigure">${figure}</span></p>`; //  TODO вынести в функцию
     }
     if (step === cells.length * cells.length - 1) {
-        return "<p>Ничья</p>"; //  TODO
+        return "<p>Ничья</p>"; //  TODO вынести в функцию
     }
 
     return "";
@@ -206,7 +206,7 @@ export function checkWin(cells: string[][], cell: ICell, winSeriesInGame: number
 export function checkValuesInLine(cells: string[][], winSeriesInGame: number, cell: ICell, line: ILine): string[] {
     const response = [];
     const COORDINATE_BEFORE = -1;
-    const COORDINATE_AFTER = -1;
+    const COORDINATE_AFTER = 1;
     //Проверяем соседние ячейки. Если они содержат похожее значение то проверяем всю линию
     const beforePositionX = getPosition("x", cell.x, line, COORDINATE_BEFORE);
     const afterPositionX = getPosition("x", cell.x, line, COORDINATE_AFTER);
